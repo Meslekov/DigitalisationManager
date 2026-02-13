@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/Data/">
+    <Project Path="DigitalisationManager.Data.Models/DigitalisationManager.Data.Models.csproj" />
+    <Project Path="DigitalisationManager.Data/DigitalisationManager.Data.csproj" />
+  </Folder>
+  <Folder Name="/Services/">
+    <Project Path="DigitalisationManager.Services.Core/DigitalisationManager.Services.Core.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+  </Folder>
+  <Folder Name="/Web/">
+    <Project Path="DigitalisationManager.Web.ViewModels/DigitalisationManager.Web.ViewModels.csproj" />
+    <Project Path="DigitalisationManager.Web/DigitalisationManager.Web.csproj" />
+  </Folder>
+  <Project Path="DigitalisationManager.GCommon/DigitalisationManager.GCommon.csproj" />
+</Solution>

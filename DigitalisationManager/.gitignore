@@ -1,0 +1,19 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Build output
+bin/
+obj/
+
+# ASP.NET Core
+appsettings.Development.json
+
+# Storage folder (TIFF files)
+Storage/
+src/**/Storage/
+
+# Rider / VSCode safety
+.idea/
+.vscode/
