@@ -1,9 +1,10 @@
 namespace DigitalisationManager.Web
 {
+    using DigitalisationManager.Data;
+    using DigitalisationManager.Services.Core;
+    using DigitalisationManager.Services.Core.Contracts;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
-
-    using DigitalisationManager.Data;
 
     public class Program
     {
@@ -24,6 +25,10 @@ namespace DigitalisationManager.Web
             })
                 .AddEntityFrameworkStores<DigitalisationManagerDbContext>();
             builder.Services.AddControllersWithViews();
+
+            //My services
+            builder.Services.AddScoped<IFundService, FundService>();
+
 
             WebApplication app = builder.Build();
 

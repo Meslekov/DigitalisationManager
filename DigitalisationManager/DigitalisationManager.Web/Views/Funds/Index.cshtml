@@ -1,0 +1,56 @@
+﻿@using DigitalisationManager.Web.ViewModels.Funds
+
+@{
+}
+@model IEnumerable<FundListViewModel>
+@{
+    ViewData["Title"] = "Funds";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+        <h1 class="h4 mb-0">Funds</h1>
+    </div>
+    <a class="btn btn-dark" asp-action="Create">+ Create Fund</a>
+</div>
+
+@if (!Model.Any())
+{
+        <div class="alert alert-info border">
+            No funds yet. Create your first fund to start organizing items.
+        </div>
+}
+else
+{
+        <div class="card shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-striped align-middle mb-0">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Type</th>
+                        <th>Code</th>
+                        <th>Title</th>
+                        <th>Items stored</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var f in Model)
+                    {
+                            <tr>
+                                <td>@f.FundType</td>
+                                <td class="fw-semibold">@f.Code</td>
+                                <td>@f.Title</td>
+                                <td>@f.ItemsCount</td>
+                                <td class="text-end">
+                                    <a class="btn btn-sm btn-outline-secondary" asp-action="Details" asp-route-id="@f.Id">Details</a>
+                                    <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@f.Id">Edit</a>
+                                    <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@f.Id">Delete</a>
+                                </td>
+                            </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+}
