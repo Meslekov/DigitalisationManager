@@ -3,7 +3,7 @@
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    using DigitalisationManager.Data.Models.Enums;
+    using DigitalisationManager.GCommon.Enums;
 
     using static DigitalisationManager.GCommon.ValidationConstants.Item;
 
@@ -24,7 +24,7 @@
         public string? Description { get; set; }
 
         [Required]
-        public ItemStaus Status { get; set; } = ItemStaus.New;
+        public ItemStatus Status { get; set; } = ItemStatus.New;
 
         [Required]
         public DateTime CreatedAt { get; set; }

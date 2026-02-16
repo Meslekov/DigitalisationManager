@@ -1,0 +1,117 @@
+﻿namespace DigitalisationManager.Web.Controllers
+{
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
+
+    using DigitalisationManager.Services.Core.Contracts;
+    using DigitalisationManager.Web.ViewModels.Item;
+
+    public class ItemsController : Controller
+    {
+        private readonly IItemService itemService;
+
+        public ItemsController(IItemService itemService)
+        {
+            this.itemService = itemService;
+        }
+
+        public async Task<IActionResult> Index(int? fundId, string? q)
+        {
+            var model = await itemService.GetIndexAsync(fundId, q);
+            return View(model);
+        }
+
+        public async Task<IActionResult> Details(int id)
+        {
+            var model = await itemService.GetDetailsAsync(id);
+            if (model is null) return NotFound();
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Create(int? fundId)
+        {
+            var model = await itemService.GetCreateAsync(fundId);
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(ItemFormViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                model = await itemService.GetCreateAsync(model.FundId);
+                return View(model);
+            }
+
+            try
+            {
+                var newId = await itemService.CreateAsync(model);
+                return RedirectToAction(nameof(Details), new { id = newId });
+            }
+            catch (DbUpdateException)
+            {
+                ModelState.AddModelError(nameof(ItemFormViewModel.InventoryNumber),
+                    "Inventory number must be unique within the selected fund.");
+
+                model = await itemService.GetCreateAsync(model.FundId);
+                model.InventoryNumber = model.InventoryNumber;
+                model.Description = model.Description;
+                model.DocumentDateText = model.DocumentDateText;
+                model.Status = model.Status;
+
+                return View(model);
+            }
+        }
+
+        public async Task<IActionResult> Edit(int id)
+        {
+            var model = await itemService.GetForEditAsync(id);
+            if (model is null) return NotFound();
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(ItemFormViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                var vm = await itemService.GetForEditAsync(model.Id ?? 0);
+                return View(vm ?? model);
+            }
+
+            var result = await itemService.UpdateAsync(model);
+            if (!result.Success)
+            {
+                ModelState.AddModelError(string.Empty, result.Error ?? "Unable to update item.");
+                var vm = await itemService.GetForEditAsync(model.Id ?? 0);
+                return View(vm ?? model);
+            }
+
+            return RedirectToAction(nameof(Details), new { id = model.Id });
+        }
+
+        public async Task<IActionResult> Delete(int id)
+        {
+            var model = await itemService.GetForDeleteAsync(id);
+            if (model is null) return NotFound();
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var result = await itemService.DeleteAsync(id);
+
+            if (!result.Success)
+            {
+                TempData["Error"] = result.Error;
+                return RedirectToAction(nameof(Details), new { id });
+            }
+
+            TempData["Success"] = "Item deleted successfully.";
+            return RedirectToAction(nameof(Index));
+        }
+    }
+}

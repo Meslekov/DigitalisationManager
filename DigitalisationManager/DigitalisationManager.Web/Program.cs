@@ -28,6 +28,7 @@ namespace DigitalisationManager.Web
 
             //My services
             builder.Services.AddScoped<IFundService, FundService>();
+            builder.Services.AddScoped<IItemService, ItemService>();
 
 
             WebApplication app = builder.Build();

@@ -1,0 +1,50 @@
+﻿@using DigitalisationManager.Web.ViewModels.Item
+@using DigitalisationManager.GCommon.Enums
+
+@model ItemFormViewModel
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <label class="form-label">Fund</label>
+        <select class="form-select" name="fundId">
+            <option value="">All funds</option>
+
+            @foreach (var f in Model.Funds)
+            {
+                if (Model.FundId.ToString() == f.Value)
+                {
+                    <option value="@f.Value" selected>@f.Text</option>
+                }
+                else
+                {
+                    <option value="@f.Value">@f.Text</option>
+                }
+            }
+        </select>
+        <span asp-validation-for="FundId" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="InventoryNumber" class="form-label"></label>
+        <input asp-for="InventoryNumber" class="form-control" />
+        <span asp-validation-for="InventoryNumber" class="text-danger"></span>
+    </div>
+
+    <div class="col-12">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="DocumentDateText" class="form-label"></label>
+        <input asp-for="DocumentDateText" class="form-control" placeholder="e.g. 12 March 1935, ca. 1910" />
+        <span asp-validation-for="DocumentDateText" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Status" class="form-label"></label>
+        <select asp-for="Status" class="form-select" asp-items="Html.GetEnumSelectList<ItemStatus>()"></select>
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div>
+</div>

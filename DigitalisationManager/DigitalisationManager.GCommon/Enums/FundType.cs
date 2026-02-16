@@ -1,4 +1,4 @@
-﻿namespace DigitalisationManager.Data.Models.Enums
+﻿namespace DigitalisationManager.GCommon.Enums
 {
     public enum FundType
     {

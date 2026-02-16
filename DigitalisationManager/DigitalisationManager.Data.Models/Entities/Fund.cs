@@ -2,7 +2,7 @@
 {
     using System.ComponentModel.DataAnnotations;
 
-    using DigitalisationManager.Data.Models.Enums;
+    using DigitalisationManager.GCommon.Enums;
 
     using static DigitalisationManager.GCommon.ValidationConstants.Fund;
 

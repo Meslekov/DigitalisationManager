@@ -8,6 +8,7 @@
     using DigitalisationManager.Services.Core.Contracts;
 
     using DigitalisationManager.Web.ViewModels.Funds;
+    using DigitalisationManager.Web.ViewModels.Shared;
 
     public class FundService : IFundService
     {

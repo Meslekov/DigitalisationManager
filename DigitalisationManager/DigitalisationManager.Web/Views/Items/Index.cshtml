@@ -1,0 +1,113 @@
+﻿@using DigitalisationManager.Web.ViewModels.Item
+
+@model ItemQueryViewModel
+@{
+    ViewData["Title"] = "Items";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+        <h1 class="h4 mb-0">Items</h1>
+        <div class="text-muted small">Search and filter archival items</div>
+    </div>
+    <a class="btn btn-dark" asp-action="Create">+ Create Item</a>
+</div>
+
+<div class="card shadow-sm mb-3">
+    <div class="card-body">
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label">Fund</label>
+                <select class="form-select" name="fundId">
+                    <option value="">All funds</option>
+
+                    @foreach (var f in Model.Funds)
+                    {
+                        if (Model.FundId?.ToString() == f.Value)
+                        {
+                            <option value="@f.Value" selected>@f.Text</option>
+                        }
+                        else
+                        {
+                            <option value="@f.Value">@f.Text</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Search</label>
+                <input class="form-control"
+                       name="q"
+                       value="@Model.Q"
+                       placeholder="Inventory number, description, document date..." />
+            </div>
+
+            <div class="col-md-2 d-grid">
+                <button class="btn btn-outline-dark" type="submit">Apply</button>
+            </div>
+
+            <div class="col-12">
+                <a class="small text-muted" asp-action="Index">Clear filters</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (Model.Results == null || Model.Results.Count == 0)
+{
+    <div class="alert alert-info border">
+        No items found. Try changing filters or create a new item.
+    </div>
+}
+else
+{
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-striped align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Inventory number</th>
+                        <th>Fund</th>
+                        <th>Description</th>
+                        <th>Document date</th>
+                        <th>Status</th>
+                        <th class="text-center">Files</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var i in Model.Results)
+                    {
+                        <tr>
+                            <td class="fw-semibold">@i.InventoryNumber</td>
+                            <td>@i.FundCode</td>
+                            <td>@(string.IsNullOrWhiteSpace(i.Description) ? "—" : i.Description)</td>
+                            <td>@(string.IsNullOrWhiteSpace(i.DocumentDateText) ? "—" : i.DocumentDateText)</td>
+                            <td>
+                                <span class="badge bg-secondary">@i.Status</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-secondary">@i.FilesCount</span>
+                            </td>
+                            <td class="text-end">
+                                <a class="btn btn-sm btn-outline-secondary"
+                                   asp-action="Details"
+                                   asp-route-id="@i.Id">Details</a>
+
+                                <a class="btn btn-sm btn-outline-secondary"
+                                   asp-action="Edit"
+                                   asp-route-id="@i.Id">Edit</a>
+
+                                <a class="btn btn-sm btn-outline-danger"
+                                   asp-action="Delete"
+                                   asp-route-id="@i.Id">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+

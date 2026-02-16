@@ -1,0 +1,39 @@
+﻿@using DigitalisationManager.Web.ViewModels.Item
+
+@model ItemDetailsViewModel
+@{
+    ViewData["Title"] = "Delete Item";
+}
+
+<div class="mb-3">
+    <h1 class="h4">Delete Item</h1>
+    <div class="text-muted">This action cannot be undone.</div>
+</div>
+
+<div class="alert alert-warning border">
+    You are about to delete item <strong>@Model.InventoryNumber</strong> from fund <strong>@Model.FundCode</strong>.
+    If the item has uploaded TIFF files, deletion should be blocked.
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Inventory</dt>
+            <dd class="col-sm-9">@Model.InventoryNumber</dd>
+
+            <dt class="col-sm-3">Fund</dt>
+            <dd class="col-sm-9">@Model.FundCode</dd>
+
+            <dt class="col-sm-3">Files</dt>
+            <dd class="col-sm-9"><span class="badge bg-secondary">@Model.FilesCount</span></dd>
+        </dl>
+
+        <form class="mt-4" asp-action="DeleteConfirmed" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.Id" />
+
+            <button type="submit" class="btn btn-danger">Yes, delete</button>
+            <a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@Model.Id">Cancel</a>
+        </form>
+    </div>
+</div>

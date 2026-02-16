@@ -1,7 +1,7 @@
 ﻿namespace DigitalisationManager.Data
 {
     using DigitalisationManager.Data.Models.Entities;
-    using DigitalisationManager.Data.Models.Enums;
+    using DigitalisationManager.GCommon.Enums;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;

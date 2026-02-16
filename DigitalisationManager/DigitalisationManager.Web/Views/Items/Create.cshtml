@@ -1,0 +1,35 @@
+﻿@using DigitalisationManager.Web.ViewModels.Item
+
+@model ItemFormViewModel
+@{
+    ViewData["Title"] = "Create Item";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h1 class="h4 mb-0">Create Item</h1>
+        <div class="text-muted small">Add a new archival item</div>
+    </div>
+    <a class="btn btn-outline-secondary" asp-action="Index">Back</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <partial name="_ItemFormPartial" model="Model" />
+
+            <div class="mt-4 d-flex gap-2">
+                <button class="btn btn-dark" type="submit">Save</button>
+                <a class="btn btn-outline-secondary" asp-action="Index">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

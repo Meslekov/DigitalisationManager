@@ -1,4 +1,4 @@
-﻿using DigitalisationManager.Data.Models.Enums;
+﻿using DigitalisationManager.GCommon.Enums;
 
 namespace DigitalisationManager.Web.ViewModels.Funds
 {
