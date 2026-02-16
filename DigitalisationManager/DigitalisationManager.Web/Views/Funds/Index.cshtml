@@ -1,8 +1,7 @@
 ﻿@using DigitalisationManager.Web.ViewModels.Funds
 
-@{
-}
 @model IEnumerable<FundListViewModel>
+
 @{
     ViewData["Title"] = "Funds";
 }
@@ -46,6 +45,9 @@ else
                                     <a class="btn btn-sm btn-outline-secondary" asp-action="Details" asp-route-id="@f.Id">Details</a>
                                     <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@f.Id">Edit</a>
                                     <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@f.Id">Delete</a>
+                                    <a class="btn btn-dark" asp-controller="Items" asp-action="Index" asp-route-fundId="@f.Id">
+                                        View Items
+                                    </a>
                                 </td>
                             </tr>
                     }

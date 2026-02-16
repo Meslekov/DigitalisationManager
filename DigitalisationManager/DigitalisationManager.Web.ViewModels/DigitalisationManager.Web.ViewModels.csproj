@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DigitalisationManager.Data.Models\DigitalisationManager.Data.Models.csproj" />
     <ProjectReference Include="..\DigitalisationManager.GCommon\DigitalisationManager.GCommon.csproj" />
   </ItemGroup>
 
