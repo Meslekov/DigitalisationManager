@@ -3,6 +3,9 @@
     using Microsoft.AspNetCore.Mvc;
 
     using DigitalisationManager.Services.Core.Contracts;
+    using Microsoft.AspNetCore.Authorization;
+
+    [Authorize]
     public class DigitalFilesController : Controller
     {
 

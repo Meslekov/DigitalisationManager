@@ -6,6 +6,7 @@ namespace DigitalisationManager.Web.Controllers
 
     using DigitalisationManager.Web.ViewModels;
 
+
     public class HomeController : Controller
     {
         public IActionResult Index()

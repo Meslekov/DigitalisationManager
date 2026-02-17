@@ -3,9 +3,11 @@
     using DigitalisationManager.Services.Core;
     using DigitalisationManager.Services.Core.Contracts;
     using DigitalisationManager.Web.ViewModels.Item;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
 
+    [Authorize]
     public class ItemsController : Controller
     {
         private readonly IItemService itemService;
