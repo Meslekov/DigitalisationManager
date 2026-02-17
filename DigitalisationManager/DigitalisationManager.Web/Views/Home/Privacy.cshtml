@@ -1,6 +1,67 @@
 ﻿@{
     ViewData["Title"] = "Privacy Policy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="container py-4">
+
+    <div class="mb-4">
+        <h1 class="h3 mb-1">Privacy Policy</h1>
+        <div class="text-muted small">
+            Digitalisation Manager – Archive Management System
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <h2 class="h5">1. Purpose</h2>
+            <p>
+                This system is designed for the management and digitisation of archival materials.
+                It stores metadata for Funds, Items, and associated digital TIFF files.
+            </p>
+
+            <h2 class="h5 mt-4">2. Authentication</h2>
+            <p>
+                Access to the application requires authentication.
+                User accounts are managed through ASP.NET Core Identity.
+                Only authorised users can create, edit, upload, or delete archive data.
+            </p>
+
+            <h2 class="h5 mt-4">3. Stored Data</h2>
+            <ul>
+                <li>Fund metadata</li>
+                <li>Item metadata (inventory number, description, document date, status)</li>
+                <li>Digital file metadata (original name, size, checksum, upload date)</li>
+                <li>Uploaded TIFF files stored on disk</li>
+            </ul>
+
+            <h2 class="h5 mt-4">4. File Storage</h2>
+            <p>
+                Digital files are stored on the server file system in a structured directory:
+            </p>
+
+            <div class="bg-light border rounded p-2 small mb-3">
+                Storage/Funds/{FundId}/Items/{ItemId}/Tiffs/{guid}.tif
+            </div>
+
+            <p>
+                Files are not stored in the database.
+                Access to files is controlled through authorised controller actions.
+            </p>
+
+            <h2 class="h5 mt-4">5. Data Protection</h2>
+            <p>
+                Uploaded files are validated for type and size.
+                Each file is stored with a SHA-256 checksum for integrity verification.
+            </p>
+
+            <h2 class="h5 mt-4">6. Contact</h2>
+            <p>
+                For questions regarding data handling or system access,
+                please contact the system administrator.
+            </p>
+
+        </div>
+    </div>
+
+</div>
