@@ -17,3 +17,6 @@ src/**/Storage/
 # Rider / VSCode safety
 .idea/
 .vscode/
+
+# Digital file storage (TIFF uploads)
+DigitalisationManager.Web/Storage/
