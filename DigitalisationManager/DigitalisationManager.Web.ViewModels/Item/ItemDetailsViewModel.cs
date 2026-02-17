@@ -2,6 +2,8 @@
 {
     using DigitalisationManager.GCommon.Enums;
 
+    using DigitalisationManager.Web.ViewModels.DigitalFile;
+
     public class ItemDetailsViewModel
     {
         public int Id { get; set; }
@@ -17,5 +19,7 @@
         public DateTime CreatedAt { get; set; }
 
         public int FilesCount { get; set; }
+
+        public IReadOnlyList<DigitalFileListViewModel> Files { get; set; } = Array.Empty<DigitalFileListViewModel>();
     }
 }

@@ -53,7 +53,69 @@
     </div>
 </div>
 
-<div class="mt-3 alert alert-info border">
-    File upload/list will appear here in the next step (TIFF management).
+<div class="mt-4">
+    <h2 class="h5">TIFF files</h2>
+
+    <form asp-controller="DigitalFiles" asp-action="Upload" method="post" enctype="multipart/form-data" class="border rounded p-3 mb-3">
+        <input type="hidden" name="itemId" value="@Model.Id" />
+
+        <div class="mb-2">
+            <label class="form-label">Upload TIFF (.tif/.tiff)</label>
+            <input class="form-control" type="file" name="file" accept=".tif,.tiff,image/tiff" />
+        </div>
+
+        <button class="btn btn-primary" type="submit">Upload</button>
+    </form>
+
+    @if (Model.Files.Count == 0)
+    {
+        <div class="text-muted">No files uploaded yet.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-sm align-middle">
+                <thead>
+                    <tr>
+                        <th>File</th>
+                        <th class="text-end">Size</th>
+                        <th>Uploaded</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var f in Model.Files)
+                    {
+                        <tr>
+                            <td>@f.OriginalFileName</td>
+                            <td class="text-end">@($"{f.SizeBytes:N0}")</td>
+                            <td>@f.UploadedAt.ToString("yyyy-MM-dd HH:mm") (UTC)</td>
+                            <td class="text-end">
+                                <a class="btn btn-sm btn-outline-secondary"
+                                   asp-controller="DigitalFiles"
+                                   asp-action="Download"
+                                   asp-route-id="@f.Id">
+                                    Download
+                                </a>
+
+                                <form class="d-inline"
+                                      asp-controller="DigitalFiles"
+                                      asp-action="Delete"
+                                      method="post">
+                                    <input type="hidden" name="id" value="@f.Id" />
+                                    <input type="hidden" name="itemId" value="@Model.Id" />
+                                    <button class="btn btn-sm btn-outline-danger" type="submit"
+                                            onclick="return confirm('Delete this file?');">
+                                        Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
 </div>
+
 
