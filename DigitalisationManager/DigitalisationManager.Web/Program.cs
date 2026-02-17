@@ -3,6 +3,7 @@ namespace DigitalisationManager.Web
     using DigitalisationManager.Data;
     using DigitalisationManager.Services.Core;
     using DigitalisationManager.Services.Core.Contracts;
+    using DigitalisationManager.Services.Core.Options;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
 
@@ -29,7 +30,8 @@ namespace DigitalisationManager.Web
             //My services
             builder.Services.AddScoped<IFundService, FundService>();
             builder.Services.AddScoped<IItemService, ItemService>();
-
+            builder.Services.AddScoped<IFileStorageService, FileStorageService>();
+            builder.Services.AddScoped<FileStorageOptions>();
 
             WebApplication app = builder.Build();
 
