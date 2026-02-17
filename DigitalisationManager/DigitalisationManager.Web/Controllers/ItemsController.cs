@@ -1,18 +1,20 @@
 ﻿namespace DigitalisationManager.Web.Controllers
 {
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
-
+    using DigitalisationManager.Services.Core;
     using DigitalisationManager.Services.Core.Contracts;
     using DigitalisationManager.Web.ViewModels.Item;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
 
     public class ItemsController : Controller
     {
         private readonly IItemService itemService;
+        private readonly IDigitalFileService dgFileService;
 
-        public ItemsController(IItemService itemService)
+        public ItemsController(IItemService itemService, IDigitalFileService dgFileService)
         {
             this.itemService = itemService;
+            this.dgFileService = dgFileService;
         }
 
         public async Task<IActionResult> Index(int? fundId, string? q)
@@ -25,6 +27,9 @@
         {
             var model = await itemService.GetDetailsAsync(id);
             if (model is null) return NotFound();
+
+            model.Files = await dgFileService.ListByItemAsync(id);
+            model.FilesCount = model.Files.Count;
 
             return View(model);
         }

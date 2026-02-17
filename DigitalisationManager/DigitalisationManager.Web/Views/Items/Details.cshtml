@@ -1,6 +1,6 @@
 ﻿@using DigitalisationManager.Web.ViewModels.Item
-
 @model ItemDetailsViewModel
+
 @{
     ViewData["Title"] = "Item Details";
 }
@@ -39,7 +39,9 @@
             <dd class="col-sm-9">@(!string.IsNullOrWhiteSpace(Model.DocumentDateText) ? Model.DocumentDateText : "—")</dd>
 
             <dt class="col-sm-3">Status</dt>
-            <dd class="col-sm-9"><span class="badge bg-secondary">@Model.Status</span></dd>
+            <dd class="col-sm-9">
+                <span class="badge bg-secondary">@Model.Status</span>
+            </dd>
 
             <dt class="col-sm-3">Description</dt>
             <dd class="col-sm-9">@(!string.IsNullOrWhiteSpace(Model.Description) ? Model.Description : "—")</dd>
@@ -48,7 +50,9 @@
             <dd class="col-sm-9">@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm") (UTC)</dd>
 
             <dt class="col-sm-3">Files</dt>
-            <dd class="col-sm-9"><span class="badge bg-secondary">@Model.FilesCount</span></dd>
+            <dd class="col-sm-9">
+                <span class="badge bg-secondary">@Model.FilesCount</span>
+            </dd>
         </dl>
     </div>
 </div>
@@ -56,18 +60,27 @@
 <div class="mt-4">
     <h2 class="h5">TIFF files</h2>
 
-    <form asp-controller="DigitalFiles" asp-action="Upload" method="post" enctype="multipart/form-data" class="border rounded p-3 mb-3">
+    <!-- Upload -->
+    <form asp-controller="DigitalFiles"
+          asp-action="Upload"
+          method="post"
+          enctype="multipart/form-data"
+          class="border rounded p-3 mb-3">
+        @Html.AntiForgeryToken()
         <input type="hidden" name="itemId" value="@Model.Id" />
 
         <div class="mb-2">
             <label class="form-label">Upload TIFF (.tif/.tiff)</label>
-            <input class="form-control" type="file" name="file" accept=".tif,.tiff,image/tiff" />
+            <input class="form-control"
+                   type="file"
+                   name="file"
+                   accept=".tif,.tiff,image/tiff" />
         </div>
 
         <button class="btn btn-primary" type="submit">Upload</button>
     </form>
 
-    @if (Model.Files.Count == 0)
+    @if (Model.Files == null || Model.Files.Count == 0)
     {
         <div class="text-muted">No files uploaded yet.</div>
     }
@@ -98,17 +111,15 @@
                                     Download
                                 </a>
 
-                                <form class="d-inline"
-                                      asp-controller="DigitalFiles"
-                                      asp-action="Delete"
-                                      method="post">
-                                    <input type="hidden" name="id" value="@f.Id" />
-                                    <input type="hidden" name="itemId" value="@Model.Id" />
-                                    <button class="btn btn-sm btn-outline-danger" type="submit"
-                                            onclick="return confirm('Delete this file?');">
-                                        Delete
-                                    </button>
-                                </form>
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-danger"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#deleteFileModal"
+                                        data-file-id="@f.Id"
+                                        data-item-id="@Model.Id"
+                                        data-file-name="@f.OriginalFileName">
+                                    Delete
+                                </button>
                             </td>
                         </tr>
                     }
@@ -118,4 +129,63 @@
     }
 </div>
 
+<!-- DELETE CONFIRMATION MODAL -->
+<div class="modal fade" id="deleteFileModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete file</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
 
+            <div class="modal-body">
+                <p class="mb-1">
+                    Are you sure you want to delete
+                    <strong id="deleteFileName"></strong>?
+                </p>
+                <small class="text-muted">This action cannot be undone.</small>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button"
+                        class="btn btn-outline-secondary"
+                        data-bs-dismiss="modal">
+                    Cancel
+                </button>
+
+                <form id="deleteFileForm"
+                      asp-controller="DigitalFiles"
+                      asp-action="Delete"
+                      method="post"
+                      class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" id="deleteFileId" />
+                    <input type="hidden" name="itemId" id="deleteItemId" />
+                    <button type="submit" class="btn btn-danger">
+                        Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const deleteModal = document.getElementById('deleteFileModal');
+
+        if (deleteModal) {
+            deleteModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+
+                const fileId = button.getAttribute('data-file-id');
+                const itemId = button.getAttribute('data-item-id');
+                const fileName = button.getAttribute('data-file-name');
+
+                document.getElementById('deleteFileId').value = fileId;
+                document.getElementById('deleteItemId').value = itemId;
+                document.getElementById('deleteFileName').textContent = fileName;
+            });
+        }
+    </script>
+}

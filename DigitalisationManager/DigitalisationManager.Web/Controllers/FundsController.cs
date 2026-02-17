@@ -1,9 +1,10 @@
 ﻿namespace DigitalisationManager.Web.Controllers
 {
-    using DigitalisationManager.Services.Core;
-    using DigitalisationManager.Services.Core.Contracts;
-    using DigitalisationManager.Web.ViewModels.Funds;
     using Microsoft.AspNetCore.Mvc;
+
+    using DigitalisationManager.Services.Core.Contracts;
+   
+    using DigitalisationManager.Web.ViewModels.Funds;
 
     public class FundsController : Controller
     {
