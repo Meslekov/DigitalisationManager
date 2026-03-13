@@ -1,49 +1,52 @@
 ﻿@using DigitalisationManager.Web.ViewModels.Item
 
 @model ItemQueryViewModel
+
 @{
     ViewData["Title"] = "Items";
 }
 
-<div class="d-flex align-items-center justify-content-between mb-3">
+<div class="d-flex justify-content-between align-items-center mb-3">
     <div>
-        <h1 class="h4 mb-0">Items</h1>
-        <div class="text-muted small">Search and filter archival items</div>
+        <h1 class="h3 mb-0">Items</h1>
+        <div class="text-muted">Browse archival items and filter by fund or keyword</div>
     </div>
-    <a class="btn btn-dark" asp-action="Create">+ Create Item</a>
+
+    <a class="btn btn-primary" asp-action="Create">Create Item</a>
 </div>
 
 <div class="card shadow-sm mb-3">
     <div class="card-body">
-        <form method="get" class="row g-2 align-items-end">
+        <form method="get" asp-action="Index" class="row g-2 align-items-end">
             <div class="col-md-4">
-                <label class="form-label">Fund</label>
-                <select class="form-select" name="fundId">
+                <label class="form-label" for="fundId">Fund</label>
+                <select id="fundId" name="fundId" class="form-select">
                     <option value="">All funds</option>
-
-                    @foreach (var f in Model.Funds)
+                    @foreach (var fund in Model.Funds)
                     {
-                        if (Model.FundId?.ToString() == f.Value)
+                        if (Model.FundId.HasValue && Model.FundId.Value.ToString() == fund.Value)
                         {
-                            <option value="@f.Value" selected>@f.Text</option>
+                            <option value="@fund.Value" selected>@fund.Text</option>
                         }
                         else
                         {
-                            <option value="@f.Value">@f.Text</option>
+                            <option value="@fund.Value">@fund.Text</option>
                         }
                     }
                 </select>
             </div>
 
             <div class="col-md-6">
-                <label class="form-label">Search</label>
-                <input class="form-control"
+                <label class="form-label" for="q">Search</label>
+                <input id="q"
                        name="q"
                        value="@Model.Q"
+                       class="form-control"
                        placeholder="Inventory number, description, document date..." />
             </div>
 
             <div class="col-md-2 d-grid">
+                <input type="hidden" name="page" value="1" />
                 <button class="btn btn-outline-dark" type="submit">Apply</button>
             </div>
 
@@ -54,7 +57,7 @@
     </div>
 </div>
 
-@if (Model.Results == null || Model.Results.Count == 0)
+@if (Model.Results.Items.Count == 0)
 {
     <div class="alert alert-info border">
         No items found. Try changing filters or create a new item.
@@ -77,37 +80,66 @@ else
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var i in Model.Results)
+                    @foreach (var item in Model.Results.Items)
                     {
                         <tr>
-                            <td class="fw-semibold">@i.InventoryNumber</td>
-                            <td>@i.FundCode</td>
-                            <td>@(string.IsNullOrWhiteSpace(i.Description) ? "—" : i.Description)</td>
-                            <td>@(string.IsNullOrWhiteSpace(i.DocumentDateText) ? "—" : i.DocumentDateText)</td>
+                            <td class="fw-semibold">@item.InventoryNumber</td>
+                            <td>@item.FundCode</td>
+                            <td>@(string.IsNullOrWhiteSpace(item.Description) ? "—" : item.Description)</td>
+                            <td>@(string.IsNullOrWhiteSpace(item.DocumentDateText) ? "—" : item.DocumentDateText)</td>
                             <td>
-                                <span class="badge bg-secondary">@i.Status</span>
+                                <span class="badge bg-secondary">@item.Status</span>
                             </td>
                             <td class="text-center">
-                                <span class="badge bg-secondary">@i.FilesCount</span>
+                                <span class="badge bg-secondary">@item.FilesCount</span>
                             </td>
                             <td class="text-end">
-                                <a class="btn btn-sm btn-outline-secondary"
-                                   asp-action="Details"
-                                   asp-route-id="@i.Id">Details</a>
-
-                                <a class="btn btn-sm btn-outline-secondary"
-                                   asp-action="Edit"
-                                   asp-route-id="@i.Id">Edit</a>
-
-                                <a class="btn btn-sm btn-outline-danger"
-                                   asp-action="Delete"
-                                   asp-route-id="@i.Id">Delete</a>
+                                <a class="btn btn-sm btn-outline-secondary" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                                <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                                <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
         </div>
+
+        <div class="card-body border-top d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div class="small text-muted">
+                Page <span class="fw-semibold">@Model.Results.Page</span>
+                @if (Model.Results.TotalPages > 0)
+                {
+                    <span>of</span> <span class="fw-semibold">@Model.Results.TotalPages</span>
+                }
+                <span>• Total: <span class="fw-semibold">@Model.Results.TotalCount</span></span>
+            </div>
+
+            @if (Model.Results.TotalPages > 1)
+            {
+                <nav aria-label="Items pagination">
+                    <ul class="pagination mb-0">
+                        <li class="page-item @(Model.Results.HasPrevious ? "" : "disabled")">
+                            <a class="page-link"
+                               asp-action="Index"
+                               asp-route-fundId="@Model.FundId"
+                               asp-route-q="@Model.Q"
+                               asp-route-page="@(Model.Results.Page - 1)">
+                                Previous
+                            </a>
+                        </li>
+
+                        <li class="page-item @(Model.Results.HasNext ? "" : "disabled")">
+                            <a class="page-link"
+                               asp-action="Index"
+                               asp-route-fundId="@Model.FundId"
+                               asp-route-q="@Model.Q"
+                               asp-route-page="@(Model.Results.Page + 1)">
+                                Next
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            }
+        </div>
     </div>
 }
-
