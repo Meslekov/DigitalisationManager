@@ -5,6 +5,7 @@ namespace DigitalisationManager.Web
     using DigitalisationManager.Services.Core.Contracts;
     using DigitalisationManager.Services.Core.Options;
     using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
 
     public class Program
@@ -25,7 +26,11 @@ namespace DigitalisationManager.Web
                 ConfigureIdentityOptions(options);
             })
                 .AddEntityFrameworkStores<DigitalisationManagerDbContext>();
-            builder.Services.AddControllersWithViews();
+           
+            builder.Services.AddControllersWithViews(options =>
+            {
+                options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+            });
 
             //My services
             builder.Services.AddScoped<IFundService, FundService>();
