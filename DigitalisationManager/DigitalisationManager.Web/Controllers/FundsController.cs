@@ -17,10 +17,10 @@
             this.fundService = fundService;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? q, int page = 1, int pageSize = 20)
         {
-            List<FundListViewModel> model = await fundService.GetAllFundsAsync();
-            
+            FundQueryViewModel model = await fundService.GetIndexAsync(q, page, pageSize);
+
             return View(model);
         }
 
