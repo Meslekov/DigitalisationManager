@@ -19,12 +19,14 @@
             this.dgFileService = dgFileService;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index(int? fundId, string? q)
         {
             var model = await itemService.GetIndexAsync(fundId, q);
             return View(model);
         }
 
+        [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
             var model = await itemService.GetDetailsAsync(id);
@@ -72,6 +74,7 @@
             }
         }
 
+        [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
             var model = await itemService.GetForEditAsync(id);
@@ -99,6 +102,7 @@
             return RedirectToAction(nameof(Details), new { id = model.Id });
         }
 
+        [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
             var model = await itemService.GetForDeleteAsync(id);

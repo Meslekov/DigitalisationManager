@@ -17,6 +17,7 @@
             this.fundService = fundService;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             List<FundListViewModel> model = await fundService.GetAllFundsAsync();
@@ -24,6 +25,7 @@
             return View(model);
         }
 
+        [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
             FundDetailsViewModel? model = await fundService.GetDetailsAsync(id);
@@ -32,6 +34,7 @@
             return View(model);
         }
 
+        [HttpGet]
         public IActionResult Create()
         {
             return View(new FundFormViewModel());
@@ -46,6 +49,7 @@
             return RedirectToAction(nameof(Details), new { id = newId });
         }
 
+        [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
             FundFormViewModel? model = await fundService.GetForEditAsync(id);
@@ -65,6 +69,7 @@
             return RedirectToAction(nameof(Details), new { id = model.Id });
         }
 
+        [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
             FundDetailsViewModel? model = await fundService.GetDetailsAsync(id);
