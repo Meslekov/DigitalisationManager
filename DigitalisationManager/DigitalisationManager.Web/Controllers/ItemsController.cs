@@ -1,6 +1,5 @@
 ﻿namespace DigitalisationManager.Web.Controllers
 {
-    using DigitalisationManager.Services.Core;
     using DigitalisationManager.Services.Core.Contracts;
     using DigitalisationManager.Web.ViewModels.Item;
     using Microsoft.AspNetCore.Authorization;
@@ -19,9 +18,9 @@
             this.dgFileService = dgFileService;
         }
 
-        public async Task<IActionResult> Index(int? fundId, string? q)
+        public async Task<IActionResult> Index(int? fundId, string? q, int page = 1, int pageSize = 20)
         {
-            var model = await itemService.GetIndexAsync(fundId, q);
+            var model = await itemService.GetIndexAsync(fundId, q, page, pageSize);
             return View(model);
         }
 

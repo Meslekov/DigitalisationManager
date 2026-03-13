@@ -5,8 +5,7 @@
 
     public interface IItemService
     {
-        Task<ItemQueryViewModel> GetIndexAsync(int? fundId, string? q);
-
+        Task<ItemQueryViewModel> GetIndexAsync(int? fundId, string? q, int page, int pageSize);
         Task<ItemDetailsViewModel?> GetDetailsAsync(int id);
 
         Task<ItemFormViewModel> GetCreateAsync(int? fundId);
