@@ -28,9 +28,8 @@
             <dd class="col-sm-9"><span class="badge bg-secondary">@Model.FilesCount</span></dd>
         </dl>
 
-        <form class="mt-4" asp-action="DeleteConfirmed" method="post">
+        <form class="mt-4" asp-action="DeleteConfirmed" asp-route-id="@Model.Id" method="post">
             @Html.AntiForgeryToken()
-            <input type="hidden" name="id" value="@Model.Id" />
 
             <button type="submit" class="btn btn-danger">Yes, delete</button>
             <a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@Model.Id">Cancel</a>
