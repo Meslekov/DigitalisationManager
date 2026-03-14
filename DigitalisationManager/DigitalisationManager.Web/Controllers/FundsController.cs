@@ -59,12 +59,23 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(FundFormViewModel model)
+        public async Task<IActionResult> Edit(int id, FundFormViewModel model)
         {
-            if (!ModelState.IsValid) return View(model);
+            if (model.Id != id)
+            {
+                return BadRequest();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
 
             bool ok = await fundService.UpdateAsync(model);
-            if (!ok) return NotFound();
+            if (!ok)
+            {
+                return NotFound();
+            }
 
             return RedirectToAction(nameof(Details), new { id = model.Id });
         }

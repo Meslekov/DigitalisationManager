@@ -83,11 +83,16 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(ItemFormViewModel model)
+        public async Task<IActionResult> Edit(int id, ItemFormViewModel model)
         {
+            if (model.Id != id)
+            {
+                return BadRequest();
+            }
+
             if (!ModelState.IsValid)
             {
-                var vm = await itemService.GetForEditAsync(model.Id ?? 0);
+                var vm = await itemService.GetForEditAsync(id);
                 return View(vm ?? model);
             }
 
@@ -95,7 +100,7 @@
             if (!result.Success)
             {
                 ModelState.AddModelError(string.Empty, result.Error ?? "Unable to update item.");
-                var vm = await itemService.GetForEditAsync(model.Id ?? 0);
+                var vm = await itemService.GetForEditAsync(id);
                 return View(vm ?? model);
             }
 
