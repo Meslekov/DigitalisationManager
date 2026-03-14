@@ -58,7 +58,7 @@
         [HttpPost]
         public async Task<IActionResult> Delete(int id, int itemId)
         {
-            var result = await digitalFileService.DeleteAsync(id);
+            var result = await digitalFileService.DeleteAsync(id, itemId);
             if (!result.Success)
                 TempData["Error"] = result.Error;
             else

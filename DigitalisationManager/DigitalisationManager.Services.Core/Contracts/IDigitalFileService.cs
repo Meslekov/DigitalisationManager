@@ -15,6 +15,6 @@
 
         Task<(bool Found, string? OriginalFileName, Stream? ContentStream)> OpenDownloadStreamAsync(int digitalFileId);
 
-        Task<(bool Success, string? Error)> DeleteAsync(int digitalFileId);
+        Task<(bool Success, string? Error)> DeleteAsync(int digitalFileId, int itemId);
     }
 }

@@ -127,10 +127,18 @@
             return (true, df.OriginalFileName, s);
         }
 
-        public async Task<(bool Success, string? Error)> DeleteAsync(int digitalFileId)
+        public async Task<(bool Success, string? Error)> DeleteAsync(int digitalFileId, int itemId)
         {
             var df = await context.DigitalFiles.FirstOrDefaultAsync(x => x.Id == digitalFileId);
-            if (df is null) return (false, "File not found.");
+            if (df is null)
+            {
+                return (false, "File not found.");
+            }
+
+            if (df.ItemId != itemId)
+            {
+                return (false, "Invalid file request.");
+            }
 
             filestorage.Delete(df.RelativePath);
 
