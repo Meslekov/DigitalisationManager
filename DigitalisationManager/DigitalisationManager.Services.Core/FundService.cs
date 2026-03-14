@@ -1,14 +1,11 @@
 ﻿namespace DigitalisationManager.Services.Core
 {
     using Microsoft.EntityFrameworkCore;
-
     using DigitalisationManager.Data;
     using DigitalisationManager.Data.Models.Entities;
-
     using DigitalisationManager.Services.Core.Contracts;
-
+    using DigitalisationManager.Services.Core.Helpers;
     using DigitalisationManager.Web.ViewModels.Funds;
-    using DigitalisationManager.Web.ViewModels.Shared;
 
     public class FundService : IFundService
     {
@@ -19,11 +16,41 @@
             this.context = context;
         }
 
-        public async Task<List<FundListViewModel>> GetAllFundsAsync()
+        public async Task<FundQueryViewModel> GetIndexAsync(string? q, int page, int pageSize)
         {
-          return await context.Funds
+            int normalizedPage = PagingHelper.NormalizePage(page);
+            int normalizedPageSize = PagingHelper.NormalizePageSize(pageSize);
+
+            string? trimmedQ = string.IsNullOrWhiteSpace(q) ? null : q.Trim();
+
+            IQueryable<Fund> query = context.Funds
                 .AsNoTracking()
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(trimmedQ))
+            {
+                query = query.Where(f =>
+                    f.Code.Contains(trimmedQ) ||
+                    f.Title.Contains(trimmedQ) ||
+                    (f.Description != null && f.Description.Contains(trimmedQ)));
+            }
+
+            int totalCount = await query.CountAsync();
+            int totalPages = totalCount == 0
+                ? 0
+                : (int)Math.Ceiling(totalCount / (double)normalizedPageSize);
+
+            if (totalPages > 0 && normalizedPage > totalPages)
+            {
+                normalizedPage = totalPages;
+            }
+
+            int skip = (normalizedPage - 1) * normalizedPageSize;
+
+            List<FundListViewModel> funds = await query
                 .OrderBy(f => f.Code)
+                .Skip(skip)
+                .Take(normalizedPageSize)
                 .Select(f => new FundListViewModel
                 {
                     Id = f.Id,
@@ -33,6 +60,19 @@
                     ItemsCount = f.Items.Count
                 })
                 .ToListAsync();
+
+            return new FundQueryViewModel
+            {
+                Q = trimmedQ,
+                Results = new DigitalisationManager.GCommon.Paging.PagedResult<FundListViewModel>
+                {
+                    Page = normalizedPage,
+                    PageSize = normalizedPageSize,
+                    TotalCount = totalCount,
+                    TotalPages = totalPages,
+                    Items = funds
+                }
+            };
         }
 
         public async Task<FundDetailsViewModel?> GetDetailsAsync(int id)

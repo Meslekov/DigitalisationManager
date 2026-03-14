@@ -9,6 +9,7 @@
 {
     <div class="alert alert-danger">@err</div>
 }
+
 @if (TempData["Success"] is string ok)
 {
     <div class="alert alert-success">@ok</div>
@@ -19,16 +20,25 @@
         <h1 class="h4 mb-0">@Model.InventoryNumber</h1>
         <div class="text-muted small">Fund: @Model.FundCode</div>
     </div>
+
     <div class="d-flex gap-2">
-        <a class="btn btn-outline-secondary" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
-        <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
-        <a class="btn btn-outline-secondary" asp-action="Index">Back</a>
+        <a class="btn btn-outline-secondary"
+           asp-action="Edit"
+           asp-route-id="@Model.Id">Edit</a>
+
+        <a class="btn btn-outline-danger"
+           asp-action="Delete"
+           asp-route-id="@Model.Id">Delete</a>
+
+        <a class="btn btn-outline-secondary"
+           asp-action="Index">Back</a>
     </div>
 </div>
 
 <div class="card shadow-sm">
     <div class="card-body">
         <dl class="row mb-0">
+
             <dt class="col-sm-3">Inventory number</dt>
             <dd class="col-sm-9">@Model.InventoryNumber</dd>
 
@@ -36,7 +46,11 @@
             <dd class="col-sm-9">@Model.FundCode</dd>
 
             <dt class="col-sm-3">Document date</dt>
-            <dd class="col-sm-9">@(!string.IsNullOrWhiteSpace(Model.DocumentDateText) ? Model.DocumentDateText : "—")</dd>
+            <dd class="col-sm-9">
+                @(string.IsNullOrWhiteSpace(Model.DocumentDateText)
+                                ? "—"
+                                : Model.DocumentDateText)
+            </dd>
 
             <dt class="col-sm-3">Status</dt>
             <dd class="col-sm-9">
@@ -44,40 +58,53 @@
             </dd>
 
             <dt class="col-sm-3">Description</dt>
-            <dd class="col-sm-9">@(!string.IsNullOrWhiteSpace(Model.Description) ? Model.Description : "—")</dd>
+            <dd class="col-sm-9">
+                @(string.IsNullOrWhiteSpace(Model.Description)
+                                ? "—"
+                                : Model.Description)
+            </dd>
 
             <dt class="col-sm-3">Created</dt>
-            <dd class="col-sm-9">@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm") (UTC)</dd>
+            <dd class="col-sm-9">
+                @Model.CreatedAt.ToString("yyyy-MM-dd HH:mm") (UTC)
+            </dd>
 
             <dt class="col-sm-3">Files</dt>
             <dd class="col-sm-9">
                 <span class="badge bg-secondary">@Model.FilesCount</span>
             </dd>
+
         </dl>
     </div>
 </div>
 
 <div class="mt-4">
+
     <h2 class="h5">TIFF files</h2>
 
-    <!-- Upload -->
     <form asp-controller="DigitalFiles"
           asp-action="Upload"
           method="post"
           enctype="multipart/form-data"
           class="border rounded p-3 mb-3">
-        @Html.AntiForgeryToken()
-        <input type="hidden" name="itemId" value="@Model.Id" />
+
+        <input type="hidden"
+               name="itemId"
+               value="@Model.Id" />
 
         <div class="mb-2">
             <label class="form-label">Upload TIFF (.tif/.tiff)</label>
+
             <input class="form-control"
                    type="file"
                    name="file"
                    accept=".tif,.tiff,image/tiff" />
         </div>
 
-        <button class="btn btn-primary" type="submit">Upload</button>
+        <button class="btn btn-primary" type="submit">
+            Upload
+        </button>
+
     </form>
 
     @if (Model.Files == null || Model.Files.Count == 0)
@@ -87,7 +114,9 @@
     else
     {
         <div class="table-responsive">
+
             <table class="table table-sm align-middle">
+
                 <thead>
                     <tr>
                         <th>File</th>
@@ -96,18 +125,29 @@
                         <th class="text-end">Actions</th>
                     </tr>
                 </thead>
+
                 <tbody>
-                    @foreach (var f in Model.Files)
+
+                    @foreach (var file in Model.Files)
                     {
                         <tr>
-                            <td>@f.OriginalFileName</td>
-                            <td class="text-end">@($"{f.SizeBytes:N0}")</td>
-                            <td>@f.UploadedAt.ToString("yyyy-MM-dd HH:mm") (UTC)</td>
+
+                            <td>@file.OriginalFileName</td>
+
                             <td class="text-end">
+                                @file.SizeBytes.ToString("N0")
+                            </td>
+
+                            <td>
+                                @file.UploadedAt.ToString("yyyy-MM-dd HH:mm") (UTC)
+                            </td>
+
+                            <td class="text-end">
+
                                 <a class="btn btn-sm btn-outline-secondary"
                                    asp-controller="DigitalFiles"
                                    asp-action="Download"
-                                   asp-route-id="@f.Id">
+                                   asp-route-id="@file.Id">
                                     Download
                                 </a>
 
@@ -115,38 +155,59 @@
                                         class="btn btn-sm btn-outline-danger"
                                         data-bs-toggle="modal"
                                         data-bs-target="#deleteFileModal"
-                                        data-file-id="@f.Id"
+                                        data-file-id="@file.Id"
                                         data-item-id="@Model.Id"
-                                        data-file-name="@f.OriginalFileName">
+                                        data-file-name="@file.OriginalFileName">
                                     Delete
                                 </button>
+
                             </td>
+
                         </tr>
                     }
+
                 </tbody>
+
             </table>
+
         </div>
     }
+
 </div>
 
-<!-- DELETE CONFIRMATION MODAL -->
-<div class="modal fade" id="deleteFileModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade"
+     id="deleteFileModal"
+     tabindex="-1"
+     aria-hidden="true">
+
     <div class="modal-dialog modal-dialog-centered">
+
         <div class="modal-content">
+
             <div class="modal-header">
                 <h5 class="modal-title">Delete file</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
             </div>
 
             <div class="modal-body">
+
                 <p class="mb-1">
                     Are you sure you want to delete
                     <strong id="deleteFileName"></strong>?
                 </p>
-                <small class="text-muted">This action cannot be undone.</small>
+
+                <small class="text-muted">
+                    This action cannot be undone.
+                </small>
+
             </div>
 
             <div class="modal-footer">
+
                 <button type="button"
                         class="btn btn-outline-secondary"
                         data-bs-dismiss="modal">
@@ -158,24 +219,35 @@
                       asp-action="Delete"
                       method="post"
                       class="d-inline">
-                    @Html.AntiForgeryToken()
+
                     <input type="hidden" name="id" id="deleteFileId" />
                     <input type="hidden" name="itemId" id="deleteItemId" />
-                    <button type="submit" class="btn btn-danger">
+
+                    <button type="submit"
+                            class="btn btn-danger">
                         Delete
                     </button>
+
                 </form>
+
             </div>
+
         </div>
+
     </div>
+
 </div>
 
 @section Scripts {
+
     <script>
+
         const deleteModal = document.getElementById('deleteFileModal');
 
         if (deleteModal) {
+
             deleteModal.addEventListener('show.bs.modal', function (event) {
+
                 const button = event.relatedTarget;
 
                 const fileId = button.getAttribute('data-file-id');
@@ -185,7 +257,11 @@
                 document.getElementById('deleteFileId').value = fileId;
                 document.getElementById('deleteItemId').value = itemId;
                 document.getElementById('deleteFileName').textContent = fileName;
+
             });
+
         }
+
     </script>
+
 }

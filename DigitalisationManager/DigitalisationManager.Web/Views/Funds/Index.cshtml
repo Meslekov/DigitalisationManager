@@ -1,58 +1,140 @@
 ﻿@using DigitalisationManager.Web.ViewModels.Funds
 
-@model IEnumerable<FundListViewModel>
+@model FundQueryViewModel
 
 @{
     ViewData["Title"] = "Funds";
 }
 
-<div class="d-flex align-items-center justify-content-between mb-3">
+<div class="d-flex justify-content-between align-items-center mb-3">
     <div>
-        <h1 class="h4 mb-0">Funds</h1>
+        <h1 class="h3 mb-0">Funds</h1>
+        <div class="text-muted">Browse and manage archival funds</div>
     </div>
-    <a class="btn btn-dark" asp-action="Create">+ Create Fund</a>
+
+    <a class="btn btn-primary" asp-action="Create">Create Fund</a>
 </div>
 
-@if (!Model.Any())
+<div class="card shadow-sm mb-3">
+    <div class="card-body">
+        <form method="get" asp-action="Index" class="row g-2 align-items-end">
+            <div class="col-md-10">
+                <label class="form-label" for="q">Search</label>
+                <input id="q"
+                       name="q"
+                       value="@Model.Q"
+                       class="form-control"
+                       placeholder="Code, title or description..." />
+            </div>
+
+            <div class="col-md-2 d-grid">
+                <input type="hidden" name="page" value="1" />
+                <button class="btn btn-outline-dark" type="submit">Apply</button>
+            </div>
+
+            <div class="col-12">
+                <a class="small text-muted" asp-action="Index">Clear search</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (Model.Results.Items.Count == 0)
 {
-        <div class="alert alert-info border">
-            No funds yet. Create your first fund to start organizing items.
-        </div>
+    <div class="alert alert-info border">
+        No funds found. Try a different search or create a new fund.
+    </div>
 }
 else
 {
-        <div class="card shadow-sm">
-            <div class="table-responsive">
-                <table class="table table-striped align-middle mb-0">
-                    <thead class="table-light">
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-striped align-middle mb-0">
+                <thead class="table-light">
                     <tr>
-                        <th>Type</th>
                         <th>Code</th>
                         <th>Title</th>
-                        <th>Items stored</th>
+                        <th>Type</th>
+                        <th class="text-center">Items</th>
                         <th class="text-end">Actions</th>
                     </tr>
-                    </thead>
-                    <tbody>
-                    @foreach (var f in Model)
+                </thead>
+                <tbody>
+                    @foreach (var fund in Model.Results.Items)
                     {
-                            <tr>
-                                <td>@f.FundType</td>
-                                <td class="fw-semibold">@f.Code</td>
-                                <td>@f.Title</td>
-                                <td>@f.ItemsCount</td>
-                                <td class="text-end">
-                                    <a class="btn btn-sm btn-outline-secondary" asp-action="Details" asp-route-id="@f.Id">Details</a>
-                                    <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@f.Id">Edit</a>
-                                    <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@f.Id">Delete</a>
-                                    <a class="btn btn-dark" asp-controller="Items" asp-action="Index" asp-route-fundId="@f.Id">
-                                        View Items
-                                    </a>
-                                </td>
-                            </tr>
+                        <tr>
+                            <td class="fw-semibold">@fund.Code</td>
+                            <td>@fund.Title</td>
+                            <td>@fund.FundType</td>
+                            <td class="text-center">
+                                <span class="badge bg-secondary">@fund.ItemsCount</span>
+                            </td>
+                            <td class="text-end">
+                                <a class="btn btn-sm btn-outline-primary"
+                                   asp-controller="Items"
+                                   asp-action="Index"
+                                   asp-route-fundId="@fund.Id">
+                                    Items
+                                </a>
+                                
+                                <a class="btn btn-sm btn-outline-secondary"
+                                   asp-action="Details"
+                                   asp-route-id="@fund.Id">
+                                    Details
+                                </a>
+                                
+                                <a class="btn btn-sm btn-outline-secondary"
+                                   asp-action="Edit"
+                                   asp-route-id="@fund.Id">
+                                    Edit
+                                </a>
+                                
+                                <a class="btn btn-sm btn-outline-danger"
+                                   asp-action="Delete"
+                                   asp-route-id="@fund.Id">
+                                    Delete
+                                </a>
+                            </td>
+                        </tr>
                     }
-                    </tbody>
-                </table>
-            </div>
+                </tbody>
+            </table>
         </div>
+
+        <div class="card-body border-top d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div class="small text-muted">
+                Page <span class="fw-semibold">@Model.Results.Page</span>
+                @if (Model.Results.TotalPages > 0)
+                {
+                    <span>of</span> <span class="fw-semibold">@Model.Results.TotalPages</span>
+                }
+                <span>• Total: <span class="fw-semibold">@Model.Results.TotalCount</span></span>
+            </div>
+
+            @if (Model.Results.TotalPages > 1)
+            {
+                <nav aria-label="Funds pagination">
+                    <ul class="pagination mb-0">
+                        <li class="page-item @(Model.Results.HasPrevious ? "" : "disabled")">
+                            <a class="page-link"
+                               asp-action="Index"
+                               asp-route-q="@Model.Q"
+                               asp-route-page="@(Model.Results.Page - 1)">
+                                Previous
+                            </a>
+                        </li>
+
+                        <li class="page-item @(Model.Results.HasNext ? "" : "disabled")">
+                            <a class="page-link"
+                               asp-action="Index"
+                               asp-route-q="@Model.Q"
+                               asp-route-page="@(Model.Results.Page + 1)">
+                                Next
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            }
+        </div>
+    </div>
 }

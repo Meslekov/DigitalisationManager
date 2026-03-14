@@ -1,17 +1,15 @@
 ﻿namespace DigitalisationManager.Services.Core
 {
-    using System.Collections.Generic;
-    using System.Linq;
-
-    using Microsoft.EntityFrameworkCore;
-
     using DigitalisationManager.Data;
     using DigitalisationManager.Data.Models.Entities;
-
+    using DigitalisationManager.GCommon.Paging;
     using DigitalisationManager.Services.Core.Contracts;
-
+    using DigitalisationManager.Services.Core.Helpers;
     using DigitalisationManager.Web.ViewModels.Item;
     using DigitalisationManager.Web.ViewModels.Shared;
+    using Microsoft.EntityFrameworkCore;
+    using System.Collections.Generic;
+    using System.Linq;
 
     public class ItemService : IItemService
     {
@@ -74,37 +72,58 @@
                .FirstOrDefaultAsync();
         }
 
-        public async Task<ItemQueryViewModel> GetIndexAsync(int? fundId, string? q)
+        public async Task<ItemQueryViewModel> GetIndexAsync(int? fundId, string? q, int page, int pageSize)
         {
-            List<DropdownOptionViewModel> funds = await context.Funds
-               .AsNoTracking()
-               .OrderBy(f => f.Code)
-               .Select(f => new DropdownOptionViewModel
-               {
-                   Value = f.Id.ToString(),
-                   Text = $"{f.Code} - {f.Title}"
-               })
-               .ToListAsync();
+            int normalizedPage = PagingHelper.NormalizePage(page);
+            int normalizedPageSize = PagingHelper.NormalizePageSize(pageSize);
 
-            IQueryable<Item> query = context.Items
+            string? trimmedQ = string.IsNullOrWhiteSpace(q) ? null : q.Trim();
+
+            List<DropdownOptionViewModel> funds = await context.Funds
+                .AsNoTracking()
+                .OrderBy(f => f.Code)
+                .Select(f => new DropdownOptionViewModel
+                {
+                    Value = f.Id.ToString(),
+                    Text = $"{f.Code} - {f.Title}"
+                })
+                .ToListAsync();
+
+            IQueryable<Data.Models.Entities.Item> query = context.Items
                 .AsNoTracking()
                 .Include(i => i.Fund)
+                .Include(i => i.DigitalFiles)
                 .AsQueryable();
 
             if (fundId.HasValue)
-                query = query.Where(i => i.FundId == fundId.Value);
-
-            if (!string.IsNullOrWhiteSpace(q))
             {
-                q = q.Trim();
-                query = query.Where(i =>
-                    i.InventoryNumber.Contains(q) ||
-                    (i.Description != null && i.Description.Contains(q)) ||
-                    (i.DocumentDateText != null && i.DocumentDateText.Contains(q)));
+                query = query.Where(i => i.FundId == fundId.Value);
             }
 
-            var results = await query
+            if (!string.IsNullOrWhiteSpace(trimmedQ))
+            {
+                query = query.Where(i =>
+                    i.InventoryNumber.Contains(trimmedQ) ||
+                    (i.Description != null && i.Description.Contains(trimmedQ)) ||
+                    (i.DocumentDateText != null && i.DocumentDateText.Contains(trimmedQ)));
+            }
+
+            int totalCount = await query.CountAsync();
+            int totalPages = totalCount == 0
+                ? 0
+                : (int)Math.Ceiling(totalCount / (double)normalizedPageSize);
+
+            if (totalPages > 0 && normalizedPage > totalPages)
+            {
+                normalizedPage = totalPages;
+            }
+
+            int skip = (normalizedPage - 1) * normalizedPageSize;
+
+            List<ItemListViewModel> results = await query
                 .OrderByDescending(i => i.CreatedAt)
+                .Skip(skip)
+                .Take(normalizedPageSize)
                 .Select(i => new ItemListViewModel
                 {
                     Id = i.Id,
@@ -121,9 +140,16 @@
             return new ItemQueryViewModel
             {
                 FundId = fundId,
-                Q = q,
+                Q = trimmedQ,
                 Funds = funds,
-                Results = results
+                Results = new PagedResult<ItemListViewModel>
+                {
+                    Page = normalizedPage,
+                    PageSize = normalizedPageSize,
+                    TotalCount = totalCount,
+                    TotalPages = totalPages,
+                    Items = results
+                }
             };
         }
 
