@@ -1,4 +1,4 @@
-﻿namespace DigitalisationManager.Web.Controllers
+﻿namespace DigitalisationManager.Web.Areas.Admin.Controllers
 {
     using Microsoft.AspNetCore.Mvc;
 
@@ -6,7 +6,7 @@
     using Microsoft.AspNetCore.Authorization;
 
     [Authorize]
-    public class DigitalFilesController : Controller
+    public class DigitalFilesController : AdminBaseController
     {
 
         private readonly IDigitalFileService digitalFileService;

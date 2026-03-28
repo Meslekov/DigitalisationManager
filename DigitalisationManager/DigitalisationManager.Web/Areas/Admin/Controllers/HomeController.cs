@@ -1,4 +1,4 @@
-namespace DigitalisationManager.Web.Controllers
+namespace DigitalisationManager.Web.Areas.Admin.Controllers
 {
     using System.Diagnostics;
 
@@ -7,7 +7,7 @@ namespace DigitalisationManager.Web.Controllers
     using DigitalisationManager.Web.ViewModels;
 
 
-    public class HomeController : Controller
+    public class HomeController : AdminBaseController
     {
         public IActionResult Index()
         {

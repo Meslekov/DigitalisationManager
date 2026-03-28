@@ -1,4 +1,4 @@
-﻿namespace DigitalisationManager.Web.Controllers
+﻿namespace DigitalisationManager.Web.Areas.Admin.Controllers
 {
     using DigitalisationManager.Services.Core.Contracts;
     using DigitalisationManager.Web.ViewModels.Item;
@@ -7,7 +7,7 @@
     using Microsoft.EntityFrameworkCore;
 
     [Authorize]
-    public class ItemsController : Controller
+    public class ItemsController : AdminBaseController
     {
         private readonly IItemService itemService;
         private readonly IDigitalFileService dgFileService;

@@ -1,4 +1,4 @@
-﻿namespace DigitalisationManager.Web.Controllers
+﻿namespace DigitalisationManager.Web.Areas.Admin.Controllers
 {
     using Microsoft.AspNetCore.Mvc;
 
@@ -8,7 +8,7 @@
     using Microsoft.AspNetCore.Authorization;
 
     [Authorize]
-    public class FundsController : Controller
+    public class FundsController : AdminBaseController
     {
         private readonly IFundService fundService;
 
