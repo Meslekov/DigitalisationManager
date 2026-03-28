@@ -28,7 +28,13 @@ namespace DigitalisationManager.Web
             })
                 .AddRoles<ApplicationRole>()
                 .AddEntityFrameworkStores<DigitalisationManagerDbContext>();
-           
+
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Identity/Account/Login";
+                options.AccessDeniedPath = "/Home/AccessDenied";
+            });
+
             builder.Services.AddControllersWithViews(options =>
             {
                 options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
@@ -62,10 +68,12 @@ namespace DigitalisationManager.Web
             app.UseAuthorization();
 
             app.MapStaticAssets();
+
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}")
                 .WithStaticAssets();
+
             app.MapRazorPages()
                .WithStaticAssets();
 
