@@ -1,12 +1,12 @@
 ﻿namespace DigitalisationManager.Data
 {
     using DigitalisationManager.Data.Models.Entities;
+    using DigitalisationManager.Data.Models.Identity;
     using DigitalisationManager.GCommon.Enums;
-    using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
 
-    public class DigitalisationManagerDbContext : IdentityDbContext
+    public class DigitalisationManagerDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
     {
         public DigitalisationManagerDbContext(DbContextOptions<DigitalisationManagerDbContext> options)
              : base(options)
@@ -36,22 +36,6 @@
                 builder.Entity<Item>()
                        .HasIndex(i => new { i.FundId, i.InventoryNumber })
                        .IsUnique();
-
-               
-                var defaultUser = new IdentityUser
-                {
-                    Id = "9a3d2b6e-3f7a-4c8c-9b4b-6c5bdfaa1111",
-                    UserName = "admin@digitalisationmanager.local",
-                    NormalizedUserName = "ADMIN@DIGITALISATIONMANAGER.LOCAL",
-                    Email = "admin@digitalisationmanager.local",
-                    NormalizedEmail = "ADMIN@DIGITALISATIONMANAGER.LOCAL",
-                    EmailConfirmed = true,
-                    SecurityStamp = "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
-                    ConcurrencyStamp = "564e41d9-da72-4812-a5cd-6cd8743ee292",
-                    PasswordHash = "AQAAAAIAAYagAAAAEJppDSosLe9PSUf4y/CwEcXtNPrwJxBFBtvTU7MqRSMVnEh4AjnV/UmXREB1jwelWA=="
-                };
-
-                builder.Entity<IdentityUser>().HasData(defaultUser);
 
                 builder.Entity<Fund>().HasData(
                     new Fund
