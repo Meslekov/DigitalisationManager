@@ -4,6 +4,7 @@
 
 namespace DigitalisationManager.Web.Areas.Identity.Pages.Account
 {
+    using DigitalisationManager.Data.Models.Identity;
     using Microsoft.AspNetCore.Identity;
 
     using Microsoft.AspNetCore.Mvc;
@@ -11,10 +12,10 @@ namespace DigitalisationManager.Web.Areas.Identity.Pages.Account
 
     public class LogoutModel : PageModel
     {
-        private readonly SignInManager<IdentityUser> signInManager;
+        private readonly SignInManager<ApplicationUser> signInManager;
         private readonly ILogger<LogoutModel> logger;
 
-        public LogoutModel(SignInManager<IdentityUser> signInManager, ILogger<LogoutModel> logger)
+        public LogoutModel(SignInManager<ApplicationUser> signInManager, ILogger<LogoutModel> logger)
         {
             this.signInManager = signInManager;
             this.logger = logger;
