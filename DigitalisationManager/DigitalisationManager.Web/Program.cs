@@ -1,6 +1,7 @@
 namespace DigitalisationManager.Web
 {
     using DigitalisationManager.Data;
+    using DigitalisationManager.Data.Models.Identity;
     using DigitalisationManager.Services.Core;
     using DigitalisationManager.Services.Core.Contracts;
     using DigitalisationManager.Services.Core.Options;
@@ -21,10 +22,11 @@ namespace DigitalisationManager.Web
                 options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+            builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
             {
                 ConfigureIdentityOptions(options);
             })
+                .AddRoles<ApplicationRole>()
                 .AddEntityFrameworkStores<DigitalisationManagerDbContext>();
            
             builder.Services.AddControllersWithViews(options =>
