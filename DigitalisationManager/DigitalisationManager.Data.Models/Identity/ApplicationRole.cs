@@ -8,6 +8,6 @@
         [PersonalData]
         [DataType(DataType.Text)]
         [MaxLength(100)]
-        public string? Lable { get; set; }
+        public string? Label { get; set; }
     }
 }

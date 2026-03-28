@@ -3,6 +3,7 @@
     using DigitalisationManager.Data.Models.Entities;
     using DigitalisationManager.Data.Models.Identity;
     using DigitalisationManager.GCommon.Enums;
+    using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
 
@@ -37,26 +38,78 @@
                        .HasIndex(i => new { i.FundId, i.InventoryNumber })
                        .IsUnique();
 
+                Guid administratorRoleId = Guid.Parse("11111111-1111-1111-1111-111111111111");
+                Guid userRoleId = Guid.Parse("22222222-2222-2222-2222-222222222222");
+                Guid adminUserId = Guid.Parse("33333333-3333-3333-3333-333333333333");
+                
+                ApplicationRole administratorRole = new ApplicationRole
+                {
+                    Id = administratorRoleId,
+                    Name = "Administrator",
+                    NormalizedName = "ADMINISTRATOR",
+                    Label = "Administrator",
+                    ConcurrencyStamp = "44444444-4444-4444-4444-444444444444"
+                };
+                
+                ApplicationRole userRole = new ApplicationRole
+                {
+                    Id = userRoleId,
+                    Name = "User",
+                    NormalizedName = "USER",
+                    Label = "User",
+                    ConcurrencyStamp = "55555555-5555-5555-5555-555555555555"
+                };
+                
+                builder.Entity<ApplicationRole>().HasData(administratorRole, userRole);
+
+            ApplicationUser adminUser = new ApplicationUser
+            {
+                Id = adminUserId,
+                UserName = "admin@digitalisationmanager.local",
+                NormalizedUserName = "ADMIN@DIGITALISATIONMANAGER.LOCAL",
+                Email = "admin@digitalisationmanager.local",
+                NormalizedEmail = "ADMIN@DIGITALISATIONMANAGER.LOCAL",
+                EmailConfirmed = true,
+                FirstName = "System",
+                LastName = "Administrator",
+                SecurityStamp = "66666666-6666-6666-6666-666666666666",
+                ConcurrencyStamp = "77777777-7777-7777-7777-777777777777",
+                PhoneNumberConfirmed = false,
+                TwoFactorEnabled = false,
+                LockoutEnabled = false,
+                AccessFailedCount = 0,
+                PasswordHash = "$2a$12$oB1x//EfdUIG5Sq4AFews.DPvHIdejLO8Xl.JdhHR3aSUqpf5h2h."
+            };
+
+            builder.Entity<ApplicationUser>().HasData(adminUser);
+                
+                builder.Entity<IdentityUserRole<Guid>>().HasData(new IdentityUserRole<Guid>
+                {
+                    UserId = adminUserId,
+                    RoleId = administratorRoleId
+                });
+                
+                
                 builder.Entity<Fund>().HasData(
-                    new Fund
-                    {
-                        Id = 1,
-                        FundType = FundType.ArchiveFund,
-                        Code = "AF-001",
-                        Title = "Archive Fund 001",
-                        Description = "Seeded demo fund (remove if you want empty DB).",
-                        CreatedAt = new DateTime(2026, 02, 13, 0, 0, 0, DateTimeKind.Utc)
-                    },
-                    new Fund
-                    {
-                        Id = 2,
-                        FundType = FundType.PhotoFund,
-                        Code = "PF-001",
-                        Title = "Photo Fund 001",
-                        Description = "Seeded demo fund (remove if you want empty DB).",
-                        CreatedAt = new DateTime(2026, 02, 13, 0, 0, 0, DateTimeKind.Utc)
-                    }
-                );
+                        new Fund
+                        {
+                            Id = 1,
+                            FundType = FundType.ArchiveFund,
+                            Code = "AF-001",
+                            Title = "Archive Fund 001",
+                            Description = "Seeded demo fund (remove if you want empty DB).",
+                            CreatedAt = new DateTime(2026, 02, 13, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new Fund
+                        {
+                            Id = 2,
+                            FundType = FundType.PhotoFund,
+                            Code = "PF-001",
+                            Title = "Photo Fund 001",
+                            Description = "Seeded demo fund (remove if you want empty DB).",
+                            CreatedAt = new DateTime(2026, 02, 13, 0, 0, 0, DateTimeKind.Utc)
+                        }
+                    );
             }
         }
     }
