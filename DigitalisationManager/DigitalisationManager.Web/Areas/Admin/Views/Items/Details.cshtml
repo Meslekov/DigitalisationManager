@@ -1,5 +1,4 @@
-﻿@using DigitalisationManager.Web.ViewModels.Item
-@model ItemDetailsViewModel
+﻿@model DigitalisationManager.Web.ViewModels.Item.ItemDetailsViewModel
 
 @{
     ViewData["Title"] = "Item Details";
@@ -23,22 +22,30 @@
 
     <div class="d-flex gap-2">
         <a class="btn btn-outline-secondary"
-           asp-action="Edit"
-           asp-route-id="@Model.Id">Edit</a>
+               asp-area="Admin"
+               asp-action="Edit"
+               asp-route-id="@Model.Id">
+            Edit
+        </a>
 
         <a class="btn btn-outline-danger"
-           asp-action="Delete"
-           asp-route-id="@Model.Id">Delete</a>
+               asp-area="Admin"
+               asp-action="Delete"
+               asp-route-id="@Model.Id">
+            Delete
+        </a>
 
         <a class="btn btn-outline-secondary"
-           asp-action="Index">Back</a>
+               asp-area="Admin"
+               asp-action="Index">
+            Back
+        </a>
     </div>
 </div>
 
 <div class="card shadow-sm">
     <div class="card-body">
         <dl class="row mb-0">
-
             <dt class="col-sm-3">Inventory number</dt>
             <dd class="col-sm-9">@Model.InventoryNumber</dd>
 
@@ -48,8 +55,8 @@
             <dt class="col-sm-3">Document date</dt>
             <dd class="col-sm-9">
                 @(string.IsNullOrWhiteSpace(Model.DocumentDateText)
-                                ? "—"
-                                : Model.DocumentDateText)
+                    ? "—"
+                    : Model.DocumentDateText)
             </dd>
 
             <dt class="col-sm-3">Status</dt>
@@ -60,8 +67,8 @@
             <dt class="col-sm-3">Description</dt>
             <dd class="col-sm-9">
                 @(string.IsNullOrWhiteSpace(Model.Description)
-                                ? "—"
-                                : Model.Description)
+                    ? "—"
+                    : Model.Description)
             </dd>
 
             <dt class="col-sm-3">Created</dt>
@@ -73,16 +80,15 @@
             <dd class="col-sm-9">
                 <span class="badge bg-secondary">@Model.FilesCount</span>
             </dd>
-
         </dl>
     </div>
 </div>
 
 <div class="mt-4">
-
     <h2 class="h5">TIFF files</h2>
 
-    <form asp-controller="DigitalFiles"
+    <form asp-area="Admin"
+          asp-controller="DigitalFiles"
           asp-action="Upload"
           method="post"
           enctype="multipart/form-data"
@@ -104,7 +110,6 @@
         <button class="btn btn-primary" type="submit">
             Upload
         </button>
-
     </form>
 
     @if (Model.Files == null || Model.Files.Count == 0)
@@ -114,9 +119,7 @@
     else
     {
         <div class="table-responsive">
-
             <table class="table table-sm align-middle">
-
                 <thead>
                     <tr>
                         <th>File</th>
@@ -125,29 +128,19 @@
                         <th class="text-end">Actions</th>
                     </tr>
                 </thead>
-
                 <tbody>
-
                     @foreach (var file in Model.Files)
                     {
                         <tr>
-
                             <td>@file.OriginalFileName</td>
-
+                            <td class="text-end">@file.SizeBytes.ToString("N0")</td>
+                            <td>@file.UploadedAt.ToString("yyyy-MM-dd HH:mm") (UTC)</td>
                             <td class="text-end">
-                                @file.SizeBytes.ToString("N0")
-                            </td>
-
-                            <td>
-                                @file.UploadedAt.ToString("yyyy-MM-dd HH:mm") (UTC)
-                            </td>
-
-                            <td class="text-end">
-
                                 <a class="btn btn-sm btn-outline-secondary"
-                                   asp-controller="DigitalFiles"
-                                   asp-action="Download"
-                                   asp-route-id="@file.Id">
+                                       asp-area="Admin"
+                                       asp-controller="DigitalFiles"
+                                       asp-action="Download"
+                                       asp-route-id="@file.Id">
                                     Download
                                 </a>
 
@@ -160,30 +153,21 @@
                                         data-file-name="@file.OriginalFileName">
                                     Delete
                                 </button>
-
                             </td>
-
                         </tr>
                     }
-
                 </tbody>
-
             </table>
-
         </div>
     }
-
 </div>
 
 <div class="modal fade"
      id="deleteFileModal"
      tabindex="-1"
      aria-hidden="true">
-
     <div class="modal-dialog modal-dialog-centered">
-
         <div class="modal-content">
-
             <div class="modal-header">
                 <h5 class="modal-title">Delete file</h5>
 
@@ -194,7 +178,6 @@
             </div>
 
             <div class="modal-body">
-
                 <p class="mb-1">
                     Are you sure you want to delete
                     <strong id="deleteFileName"></strong>?
@@ -203,11 +186,9 @@
                 <small class="text-muted">
                     This action cannot be undone.
                 </small>
-
             </div>
 
             <div class="modal-footer">
-
                 <button type="button"
                         class="btn btn-outline-secondary"
                         data-bs-dismiss="modal">
@@ -215,6 +196,7 @@
                 </button>
 
                 <form id="deleteFileForm"
+                      asp-area="Admin"
                       asp-controller="DigitalFiles"
                       asp-action="Delete"
                       method="post"
@@ -227,27 +209,18 @@
                             class="btn btn-danger">
                         Delete
                     </button>
-
                 </form>
-
             </div>
-
         </div>
-
     </div>
-
 </div>
 
 @section Scripts {
-
     <script>
-
         const deleteModal = document.getElementById('deleteFileModal');
 
         if (deleteModal) {
-
             deleteModal.addEventListener('show.bs.modal', function (event) {
-
                 const button = event.relatedTarget;
 
                 const fileId = button.getAttribute('data-file-id');
@@ -257,11 +230,7 @@
                 document.getElementById('deleteFileId').value = fileId;
                 document.getElementById('deleteItemId').value = itemId;
                 document.getElementById('deleteFileName').textContent = fileName;
-
             });
-
         }
-
     </script>
-
 }

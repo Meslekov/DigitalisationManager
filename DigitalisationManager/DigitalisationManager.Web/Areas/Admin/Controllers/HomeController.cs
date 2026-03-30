@@ -9,11 +9,13 @@ namespace DigitalisationManager.Web.Areas.Admin.Controllers
 
     public class HomeController : AdminBaseController
     {
+        [HttpGet]
         public IActionResult Index()
         {
             return View();
         }
 
+        [HttpGet]
         public IActionResult Privacy()
         {
             return View();

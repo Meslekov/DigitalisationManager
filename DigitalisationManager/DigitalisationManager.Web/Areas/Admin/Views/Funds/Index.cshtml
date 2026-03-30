@@ -1,6 +1,4 @@
-﻿@using DigitalisationManager.Web.ViewModels.Funds
-
-@model FundQueryViewModel
+﻿@model DigitalisationManager.Web.ViewModels.Funds.FundQueryViewModel
 
 @{
     ViewData["Title"] = "Funds";
@@ -12,12 +10,12 @@
         <div class="text-muted">Browse and manage archival funds</div>
     </div>
 
-    <a class="btn btn-primary" asp-action="Create">Create Fund</a>
+    <a class="btn btn-primary" asp-area="Admin" asp-action="Create">Create Fund</a>
 </div>
 
 <div class="card shadow-sm mb-3">
     <div class="card-body">
-        <form method="get" asp-action="Index" class="row g-2 align-items-end">
+        <form method="get" asp-area="Admin" asp-action="Index" class="row g-2 align-items-end">
             <div class="col-md-10">
                 <label class="form-label" for="q">Search</label>
                 <input id="q"
@@ -33,7 +31,7 @@
             </div>
 
             <div class="col-12">
-                <a class="small text-muted" asp-action="Index">Clear search</a>
+                <a class="small text-muted" asp-area="Admin" asp-action="Index">Clear search</a>
             </div>
         </form>
     </div>
@@ -71,25 +69,29 @@ else
                             </td>
                             <td class="text-end">
                                 <a class="btn btn-sm btn-outline-primary"
+                                   asp-area="Admin"
                                    asp-controller="Items"
                                    asp-action="Index"
                                    asp-route-fundId="@fund.Id">
                                     Items
                                 </a>
-                                
+
                                 <a class="btn btn-sm btn-outline-secondary"
+                                   asp-area="Admin"
                                    asp-action="Details"
                                    asp-route-id="@fund.Id">
                                     Details
                                 </a>
-                                
+
                                 <a class="btn btn-sm btn-outline-secondary"
+                                   asp-area="Admin"
                                    asp-action="Edit"
                                    asp-route-id="@fund.Id">
                                     Edit
                                 </a>
-                                
+
                                 <a class="btn btn-sm btn-outline-danger"
+                                   asp-area="Admin"
                                    asp-action="Delete"
                                    asp-route-id="@fund.Id">
                                     Delete
@@ -117,6 +119,7 @@ else
                     <ul class="pagination mb-0">
                         <li class="page-item @(Model.Results.HasPrevious ? "" : "disabled")">
                             <a class="page-link"
+                               asp-area="Admin"
                                asp-action="Index"
                                asp-route-q="@Model.Q"
                                asp-route-page="@(Model.Results.Page - 1)">
@@ -126,6 +129,7 @@ else
 
                         <li class="page-item @(Model.Results.HasNext ? "" : "disabled")">
                             <a class="page-link"
+                               asp-area="Admin"
                                asp-action="Index"
                                asp-route-q="@Model.Q"
                                asp-route-page="@(Model.Results.Page + 1)">
