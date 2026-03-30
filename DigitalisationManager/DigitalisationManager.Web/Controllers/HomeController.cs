@@ -9,6 +9,19 @@ namespace DigitalisationManager.Web.Controllers
     {
         public IActionResult Index()
         {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                if (User.IsInRole("Administrator"))
+                {
+                    return RedirectToAction("Index", "Home", new { area = "Admin" });
+                }
+
+                if (User.IsInRole("User"))
+                {
+                    return RedirectToAction("Index", "Home", new { area = "User" });
+                }
+            }
+
             return View();
         }
 
