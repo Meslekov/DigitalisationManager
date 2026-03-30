@@ -1,0 +1,46 @@
+﻿@{
+    ViewData["Title"] = "User Home";
+}
+
+<div class="text-center py-4">
+    <h1 class="display-5">Welcome to the User Portal</h1>
+    <p class="lead text-muted">
+        Browse funds, items, and digitalized materials through the public-facing user area.
+    </p>
+</div>
+
+<div class="row mt-4 g-3">
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h2 class="h5">Funds</h2>
+                <p class="text-muted">
+                    Browse archival funds and explore their structure.
+                </p>
+                <a asp-area="User"
+                       asp-controller="Funds"
+                       asp-action="Index"
+                       class="btn btn-primary">
+                    Browse Funds
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h2 class="h5">Items</h2>
+                <p class="text-muted">
+                    Explore archival items and their digital files.
+                </p>
+                <a asp-area="User"
+                       asp-controller="Items"
+                       asp-action="Index"
+                       class="btn btn-primary">
+                    Browse Items
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
