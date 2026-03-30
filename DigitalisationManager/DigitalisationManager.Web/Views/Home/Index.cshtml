@@ -1,67 +1,46 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
-<div class="row g-4">
-    <div class="col-12">
-        <div class="p-4 bg-light rounded-3 border">
-            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
-                <div>
-                    <h1 class="h3 mb-2">DigitalisationManager</h1>
-                    <p class="mb-0 text-muted">
-                        A simple workflow: create a <strong>Fund</strong>, then add <strong>Items</strong> inside it, then upload <strong>TIFF</strong> digitizations.
-                    </p>
-                </div>
-                <div class="d-flex gap-2">
-                    <a class="btn btn-dark" asp-controller="Funds" asp-action="Create">+ New Fund</a>
-                    <a class="btn btn-outline-dark" asp-controller="Funds" asp-action="Index">Open Funds</a>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="text-center py-4">
+    <h1 class="display-5">Welcome to DigitalisationManager</h1>
+    <p class="lead text-muted">
+        A digital archive management system for organizing and exploring archival materials.
+    </p>
+</div>
 
-    <div class="col-lg-7">
-        <div class="card h-100 shadow-sm">
+<div class="row mt-4 g-3">
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
             <div class="card-body">
-                <h2 class="h5 mb-2">Start with Funds</h2>
-                <p class="text-muted mb-3">
-                    Funds are your top-level archival groupings (Archive, Photo, Icon...).
-                    Items live inside a Fund. Uploading TIFFs happens on Item Details.
+                <h2 class="h5">User Portal</h2>
+                <p class="text-muted">
+                    Browse archival funds, items, and digitalized materials through the user-facing portal.
                 </p>
-
-                <div class="d-flex flex-wrap gap-2">
-                    <a class="btn btn-dark" asp-controller="Funds" asp-action="Index">Browse Funds</a>
-                    <a class="btn btn-outline-secondary" asp-controller="Funds" asp-action="Create">Create Fund</a>
-                </div>
-
-                <hr class="my-3" />
-
-                <div class="small text-muted">
-                    Tip: open a fund and use <span class="fw-semibold">View Items</span> to work with the items in that fund.
-                </div>
+                <p class="mb-0">
+                    This area will provide a simplified browsing experience separate from the administration panel.
+                </p>
             </div>
         </div>
     </div>
 
-    <div class="col-lg-5">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body">
-                <h2 class="h5 mb-2">Workflow</h2>
-                <ol class="mb-0">
-                    <li class="mb-2">
-                        Create a <span class="fw-semibold">Fund</span>
-                        <div class="text-muted small">Defines the archival grouping.</div>
-                    </li>
-                    <li class="mb-2">
-                        Add <span class="fw-semibold">Items</span> inside the fund
-                        <div class="text-muted small">Inventory number, description, document date, status.</div>
-                    </li>
-                    <li>
-                        Upload <span class="fw-semibold">TIFF</span> files on the item
-                        <div class="text-muted small">Stored on disk + metadata saved in DB.</div>
-                    </li>
-                </ol>
+    @if (User.IsInRole("Administrator"))
+    {
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="h5">Administration</h2>
+                    <p class="text-muted">
+                        Access the administration panel to manage funds, items, digital files, and system data.
+                    </p>
+                    <a asp-area="Admin"
+                           asp-controller="Home"
+                           asp-action="Index"
+                           class="btn btn-primary">
+                        Open Admin Panel
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
+    }
 </div>
