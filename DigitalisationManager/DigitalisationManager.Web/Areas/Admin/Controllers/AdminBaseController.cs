@@ -6,10 +6,6 @@
     [Area("Admin")]
     [Authorize(Roles = "Administrator")]
     public class AdminBaseController : Controller
-    {
-        public IActionResult Index()
-        {
-            return View();
-        }
+    { 
     }
 }
