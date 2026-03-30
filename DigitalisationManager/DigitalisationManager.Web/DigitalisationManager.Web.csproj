@@ -28,8 +28,4 @@
     <ProjectReference Include="..\DigitalisationManager.Web.ViewModels\DigitalisationManager.Web.ViewModels.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Areas\Admin\Views\Shared\" />
-  </ItemGroup>
-
 </Project>

@@ -293,7 +293,7 @@ namespace DigitalisationManager.Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@DIGITALISATIONMANAGER.LOCAL",
                             NormalizedUserName = "ADMIN@DIGITALISATIONMANAGER.LOCAL",
-                            PasswordHash = "$2a$12$oB1x//EfdUIG5Sq4AFews.DPvHIdejLO8Xl.JdhHR3aSUqpf5h2h.",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJppDSosLe9PSUf4y/CwEcXtNPrwJxBFBtvTU7MqRSMVnEh4AjnV/UmXREB1jwelWA==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "66666666-6666-6666-6666-666666666666",
                             TwoFactorEnabled = false,

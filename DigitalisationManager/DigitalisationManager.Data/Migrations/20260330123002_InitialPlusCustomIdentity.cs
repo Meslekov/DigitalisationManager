@@ -239,7 +239,7 @@ namespace DigitalisationManager.Data.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { new Guid("33333333-3333-3333-3333-333333333333"), 0, "77777777-7777-7777-7777-777777777777", "admin@digitalisationmanager.local", true, "System", "Administrator", false, null, "ADMIN@DIGITALISATIONMANAGER.LOCAL", "ADMIN@DIGITALISATIONMANAGER.LOCAL", "$2a$12$oB1x//EfdUIG5Sq4AFews.DPvHIdejLO8Xl.JdhHR3aSUqpf5h2h.", null, false, "66666666-6666-6666-6666-666666666666", false, "admin@digitalisationmanager.local" });
+                values: new object[] { new Guid("33333333-3333-3333-3333-333333333333"), 0, "77777777-7777-7777-7777-777777777777", "admin@digitalisationmanager.local", true, "System", "Administrator", false, null, "ADMIN@DIGITALISATIONMANAGER.LOCAL", "ADMIN@DIGITALISATIONMANAGER.LOCAL", "AQAAAAIAAYagAAAAEJppDSosLe9PSUf4y/CwEcXtNPrwJxBFBtvTU7MqRSMVnEh4AjnV/UmXREB1jwelWA==", null, false, "66666666-6666-6666-6666-666666666666", false, "admin@digitalisationmanager.local" });
 
             migrationBuilder.InsertData(
                 table: "Funds",

@@ -78,7 +78,7 @@
                 TwoFactorEnabled = false,
                 LockoutEnabled = false,
                 AccessFailedCount = 0,
-                PasswordHash = "$2a$12$oB1x//EfdUIG5Sq4AFews.DPvHIdejLO8Xl.JdhHR3aSUqpf5h2h."
+                PasswordHash = "AQAAAAIAAYagAAAAEJppDSosLe9PSUf4y/CwEcXtNPrwJxBFBtvTU7MqRSMVnEh4AjnV/UmXREB1jwelWA=="
             };
 
             builder.Entity<ApplicationUser>().HasData(adminUser);
