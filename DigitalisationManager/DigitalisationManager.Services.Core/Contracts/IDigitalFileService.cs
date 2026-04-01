@@ -14,7 +14,7 @@
         Task<IReadOnlyList<DigitalFileListViewModel>> ListByItemAsync(int itemId);
 
         Task<(bool Found, string? OriginalFileName, Stream? ContentStream)> OpenDownloadStreamAsync(int digitalFileId);
-
+        Task<(bool Success, string? Error)> SetDownloadAllowedAsync(int digitalFileId, bool isAllowed);
         Task<(bool Success, string? Error)> DeleteAsync(int digitalFileId, int itemId);
     }
 }

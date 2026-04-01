@@ -103,7 +103,8 @@
                                 OriginalFileName = df.OriginalFileName,
                                 SizeBytes = df.SizeBytes,
                                 UploadedAt = df.UploadedAt,
-                                ChecksumSha256 = df.ChecksumSha256
+                                ChecksumSha256 = df.ChecksumSha256,
+                                IsDownloadAllowed = df.IsDownloadAllowed
                             })
                             .ToListAsync();
         }
@@ -154,6 +155,20 @@
             using var sha = SHA256.Create();
             byte[] hash = sha.ComputeHash(s);
             return Convert.ToHexString(hash).ToLowerInvariant();
+        }
+
+        public async Task<(bool Success, string? Error)> SetDownloadAllowedAsync(int digitalFileId, bool isAllowed)
+        {
+            DigitalFile? df = await context.DigitalFiles.FirstOrDefaultAsync(x => x.Id == digitalFileId);
+            if (df is null)
+            {
+                return (false, "File not found.");
+            }
+
+            df.IsDownloadAllowed = isAllowed;
+            await context.SaveChangesAsync();
+
+            return (true, null);
         }
     }
 }
