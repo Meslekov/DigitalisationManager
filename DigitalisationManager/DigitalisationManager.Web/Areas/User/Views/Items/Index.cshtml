@@ -1,0 +1,153 @@
+﻿@model DigitalisationManager.Web.ViewModels.Item.ItemQueryViewModel
+
+@{
+    ViewData["Title"] = "Items";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h1 class="h3 mb-0">Items</h1>
+        <div class="text-muted">Browse archival items and filter by fund or keyword</div>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-3">
+    <div class="card-body">
+        <form method="get" asp-area="User" asp-action="Index" class="row g-2 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label" for="fundId">Fund</label>
+                <select id="fundId" name="fundId" class="form-select">
+                    <option value="">All funds</option>
+                    @foreach (var fund in Model.Funds)
+                    {
+                        if (Model.FundId.HasValue && Model.FundId.Value.ToString() == fund.Value)
+                        {
+                            <option value="@fund.Value" selected>@fund.Text</option>
+                        }
+                        else
+                        {
+                            <option value="@fund.Value">@fund.Text</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label" for="q">Search</label>
+                <input id="q"
+                       name="q"
+                       value="@Model.Q"
+                       class="form-control"
+                       placeholder="Inventory number, description, document date..." />
+            </div>
+
+            <div class="col-md-2 d-grid">
+                <input type="hidden" name="page" value="1" />
+                <button class="btn btn-outline-dark" type="submit">Apply</button>
+            </div>
+
+            <div class="col-12">
+                <a class="small text-muted" asp-area="User" asp-action="Index">Clear filters</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (Model.Results.Items.Count == 0)
+{
+    <div class="alert alert-info border">
+        No items found.
+    </div>
+}
+else
+{
+    <div class="row g-3">
+        @foreach (var item in Model.Results.Items)
+        {
+            <div class="col-md-6 col-xl-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body d-flex flex-column">
+                        <div class="mb-2">
+                            <div class="small text-muted">Inventory number</div>
+                            <div class="fw-semibold">@item.InventoryNumber</div>
+                        </div>
+
+                        <div class="mb-2">
+                            <div class="small text-muted">Fund</div>
+                            <div>@item.FundCode</div>
+                        </div>
+
+                        <div class="mb-2">
+                            <div class="small text-muted">Document date</div>
+                            <div>@(string.IsNullOrWhiteSpace(item.DocumentDateText) ? "—" : item.DocumentDateText)</div>
+                        </div>
+
+                        <div class="mb-2">
+                            <div class="small text-muted">Status</div>
+                            <span class="badge bg-secondary">@item.Status</span>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="small text-muted">Files</div>
+                            <span class="badge bg-secondary">@item.FilesCount</span>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="small text-muted">Description</div>
+                            <div>@(string.IsNullOrWhiteSpace(item.Description) ? "—" : item.Description)</div>
+                        </div>
+
+                        <div class="mt-auto">
+                            <a class="btn btn-outline-primary w-100"
+                               asp-area="User"
+                               asp-action="Details"
+                               asp-route-id="@item.Id">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="mt-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div class="small text-muted">
+            Page <span class="fw-semibold">@Model.Results.Page</span>
+            @if (Model.Results.TotalPages > 0)
+            {
+                <span>of</span> <span class="fw-semibold">@Model.Results.TotalPages</span>
+            }
+            <span>• Total: <span class="fw-semibold">@Model.Results.TotalCount</span></span>
+        </div>
+
+        @if (Model.Results.TotalPages > 1)
+        {
+            <nav aria-label="Items pagination">
+                <ul class="pagination mb-0">
+                    <li class="page-item @(Model.Results.HasPrevious ? "" : "disabled")">
+                        <a class="page-link"
+                           asp-area="User"
+                           asp-action="Index"
+                           asp-route-fundId="@Model.FundId"
+                           asp-route-q="@Model.Q"
+                           asp-route-page="@(Model.Results.Page - 1)">
+                            Previous
+                        </a>
+                    </li>
+
+                    <li class="page-item @(Model.Results.HasNext ? "" : "disabled")">
+                        <a class="page-link"
+                           asp-area="User"
+                           asp-action="Index"
+                           asp-route-fundId="@Model.FundId"
+                           asp-route-q="@Model.Q"
+                           asp-route-page="@(Model.Results.Page + 1)">
+                            Next
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        }
+    </div>
+}
