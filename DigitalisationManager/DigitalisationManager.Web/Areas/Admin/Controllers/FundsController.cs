@@ -5,9 +5,7 @@
     using DigitalisationManager.Services.Core.Contracts;
    
     using DigitalisationManager.Web.ViewModels.Funds;
-    using Microsoft.AspNetCore.Authorization;
-
-    [Authorize]
+  
     public class FundsController : AdminBaseController
     {
         private readonly IFundService fundService;
