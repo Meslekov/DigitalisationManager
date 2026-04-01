@@ -32,6 +32,9 @@
         public string? ChecksumSha256 { get; set; }
 
         [Required]
+        public bool IsDownloadAllowed { get; set; }
+
+        [Required]
         [ForeignKey(nameof(Item))]
         public int ItemId { get; set; }
 

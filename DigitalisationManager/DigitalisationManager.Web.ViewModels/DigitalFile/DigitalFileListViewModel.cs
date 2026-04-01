@@ -7,5 +7,6 @@
         public long SizeBytes { get; set; }
         public DateTime UploadedAt { get; set; }
         public string? ChecksumSha256 { get; set; }
+        public bool IsDownloadAllowed { get; set; }
     }
 }
