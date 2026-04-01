@@ -114,6 +114,8 @@ namespace DigitalisationManager.Web.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {                  
+                    await userManager.AddToRoleAsync(user, "User"); 
+
                     if (userManager.Options.SignIn.RequireConfirmedAccount)
                     {
                         return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
