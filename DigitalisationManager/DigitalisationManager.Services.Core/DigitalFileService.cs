@@ -128,6 +128,26 @@
             return (true, df.OriginalFileName, s);
         }
 
+        public async Task<(bool Found, string? OriginalFileName, Stream? ContentStream)> OpenUserDownloadStreamAsync(int digitalFileId)
+        {
+            DigitalFile? df = await context.DigitalFiles
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.Id == digitalFileId);
+
+            if (df is null || !df.IsDownloadAllowed)
+            {
+                return (false, null, null);
+            }
+
+            if (!filestorage.Exists(df.RelativePath))
+            {
+                return (false, null, null);
+            }
+
+            Stream s = filestorage.OpenRead(df.RelativePath);
+            return (true, df.OriginalFileName, s);
+        }
+
         public async Task<(bool Success, string? Error)> DeleteAsync(int digitalFileId, int itemId)
         {
             var df = await context.DigitalFiles.FirstOrDefaultAsync(x => x.Id == digitalFileId);
@@ -170,5 +190,6 @@
 
             return (true, null);
         }
+
     }
 }

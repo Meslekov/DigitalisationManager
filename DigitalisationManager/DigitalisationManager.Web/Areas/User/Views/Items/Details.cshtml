@@ -72,6 +72,7 @@
                         <th>File</th>
                         <th class="text-end">Size</th>
                         <th>Uploaded</th>
+                        <th class="text-end">Download</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -81,6 +82,22 @@
                             <td>@file.OriginalFileName</td>
                             <td class="text-end">@file.SizeBytes.ToString("N0")</td>
                             <td>@file.UploadedAt.ToString("yyyy-MM-dd HH:mm") (UTC)</td>
+                            <td class="text-end">
+                                @if (file.IsDownloadAllowed)
+                                {
+                                    <a class="btn btn-sm btn-outline-primary"
+                                           asp-area="User"
+                                           asp-controller="DigitalFiles"
+                                           asp-action="Download"
+                                           asp-route-id="@file.Id">
+                                        Download
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">Not available</span>
+                                }
+                            </td>
                         </tr>
                     }
                 </tbody>
