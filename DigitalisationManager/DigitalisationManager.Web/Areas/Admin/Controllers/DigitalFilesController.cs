@@ -55,6 +55,25 @@
         }
 
         [HttpPost]
+        public async Task<IActionResult> SetDownloadAllowed(int id, int itemId, bool isAllowed)
+        {
+            var result = await digitalFileService.SetDownloadAllowedAsync(id, isAllowed);
+
+            if (!result.Success)
+            {
+                TempData["Error"] = result.Error;
+            }
+            else
+            {
+                TempData["Success"] = isAllowed
+                    ? "File download enabled for users."
+                    : "File download disabled for users.";
+            }
+
+            return RedirectToAction("Details", "Items", new { area = "Admin", id = itemId });
+        }
+
+        [HttpPost]
         public async Task<IActionResult> Delete(int id, int itemId)
         {
             var result = await digitalFileService.DeleteAsync(id, itemId);

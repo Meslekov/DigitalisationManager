@@ -93,7 +93,6 @@
           method="post"
           enctype="multipart/form-data"
           class="border rounded p-3 mb-3">
-
         <input type="hidden"
                name="itemId"
                value="@Model.Id" />
@@ -125,6 +124,7 @@
                         <th>File</th>
                         <th class="text-end">Size</th>
                         <th>Uploaded</th>
+                        <th>Download for users</th>
                         <th class="text-end">Actions</th>
                     </tr>
                 </thead>
@@ -135,24 +135,50 @@
                             <td>@file.OriginalFileName</td>
                             <td class="text-end">@file.SizeBytes.ToString("N0")</td>
                             <td>@file.UploadedAt.ToString("yyyy-MM-dd HH:mm") (UTC)</td>
+                            <td>
+                                @if (file.IsDownloadAllowed)
+                                {
+                                    <span class="badge bg-success">Allowed</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Blocked</span>
+                                }
+                            </td>
                             <td class="text-end">
-                                <a class="btn btn-sm btn-outline-secondary"
-                                       asp-area="Admin"
-                                       asp-controller="DigitalFiles"
-                                       asp-action="Download"
-                                       asp-route-id="@file.Id">
-                                    Download
-                                </a>
+                                <div class="d-inline-flex gap-2 flex-wrap justify-content-end">
+                                    <a class="btn btn-sm btn-outline-secondary"
+                                           asp-area="Admin"
+                                           asp-controller="DigitalFiles"
+                                           asp-action="Download"
+                                           asp-route-id="@file.Id">
+                                        Download
+                                    </a>
 
-                                <button type="button"
-                                        class="btn btn-sm btn-outline-danger"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#deleteFileModal"
-                                        data-file-id="@file.Id"
-                                        data-item-id="@Model.Id"
-                                        data-file-name="@file.OriginalFileName">
-                                    Delete
-                                </button>
+                                    <form asp-area="Admin"
+                                          asp-controller="DigitalFiles"
+                                          asp-action="SetDownloadAllowed"
+                                          method="post"
+                                          class="d-inline">
+                                        <input type="hidden" name="id" value="@file.Id" />
+                                        <input type="hidden" name="itemId" value="@Model.Id" />
+                                        <input type="hidden" name="isAllowed" value="@(file.IsDownloadAllowed ? "false" : "true")" />
+
+                                        <button type="submit" class="btn btn-sm btn-outline-primary">
+                                            @(file.IsDownloadAllowed ? "Block for Users" : "Allow for Users")
+                                        </button>
+                                    </form>
+
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-danger"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#deleteFileModal"
+                                            data-file-id="@file.Id"
+                                            data-item-id="@Model.Id"
+                                            data-file-name="@file.OriginalFileName">
+                                        Delete
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     }
@@ -201,7 +227,6 @@
                       asp-action="Delete"
                       method="post"
                       class="d-inline">
-
                     <input type="hidden" name="id" id="deleteFileId" />
                     <input type="hidden" name="itemId" id="deleteItemId" />
 
