@@ -17,6 +17,8 @@
             public DbSet<Fund> Funds { get; set; } = null!;
             public DbSet<Item> Items { get; set; } = null!;
             public DbSet<DigitalFile> DigitalFiles { get; set; } = null!;
+            public DbSet<Category> Categories { get; set; } = null!;
+            public DbSet<ItemHistory> ItemHistories { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -28,17 +30,36 @@
                        .HasForeignKey(i => i.FundId)
                        .OnDelete(DeleteBehavior.Restrict);
 
+                builder.Entity<Item>()
+                       .HasOne(i => i.Category)
+                       .WithMany(c => c.Items)
+                       .HasForeignKey(i => i.CategoryId)
+                       .OnDelete(DeleteBehavior.Restrict);
+
                 builder.Entity<DigitalFile>()
                        .HasOne(df => df.Item)
                        .WithMany(i => i.DigitalFiles)
                        .HasForeignKey(df => df.ItemId)
                        .OnDelete(DeleteBehavior.Restrict);
 
+                builder.Entity<ItemHistory>()
+                       .HasOne(ih => ih.Item)
+                       .WithMany(i => i.ItemHistories)
+                       .HasForeignKey(ih => ih.ItemId)
+                       .OnDelete(DeleteBehavior.Cascade);
+
                 builder.Entity<Item>()
                        .HasIndex(i => new { i.FundId, i.InventoryNumber })
                        .IsUnique();
 
-                Guid administratorRoleId = Guid.Parse("11111111-1111-1111-1111-111111111111");
+                builder.Entity<Category>()
+                       .HasIndex(c => c.Name)
+                       .IsUnique();
+               
+                builder.Entity<ItemHistory>()
+                       .HasIndex(ih => new { ih.ItemId, ih.CreatedAt });
+
+            Guid administratorRoleId = Guid.Parse("11111111-1111-1111-1111-111111111111");
                 Guid userRoleId = Guid.Parse("22222222-2222-2222-2222-222222222222");
                 Guid adminUserId = Guid.Parse("33333333-3333-3333-3333-333333333333");
                 
@@ -110,7 +131,35 @@
                             CreatedAt = new DateTime(2026, 02, 13, 0, 0, 0, DateTimeKind.Utc)
                         }
                     );
-            }
+
+                builder.Entity<Category>().HasData(
+                        new Category
+                        {
+                            Id = 1,
+                            Name = "Administrative Records",
+                            Description = "General administrative and institutional documents.",
+                            IsActive = true,
+                            CreatedAt = new DateTime(2026, 02, 13, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new Category
+                        {
+                            Id = 2,
+                            Name = "Correspondence",
+                            Description = "Letters, official communication, and related materials.",
+                            IsActive = true,
+                            CreatedAt = new DateTime(2026, 02, 13, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new Category
+                        {
+                            Id = 3,
+                            Name = "Photographic Materials",
+                            Description = "Photographs, scans, negatives, and related visual assets.",
+                            IsActive = true,
+                            CreatedAt = new DateTime(2026, 02, 13, 0, 0, 0, DateTimeKind.Utc)
+                        }
+                );
+
+        }
         }
     }
 
