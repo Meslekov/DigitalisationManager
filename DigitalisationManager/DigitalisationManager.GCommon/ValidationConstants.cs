@@ -31,6 +31,7 @@
             public const int StoredNameMax = 80;
             public const int PathMax = 500;
             public const int ChecksumMax = 64;
+            public const int ContentTypeMax = 100;
         }
 
         public static class Category

@@ -48,6 +48,13 @@
                        .HasForeignKey(ih => ih.ItemId)
                        .OnDelete(DeleteBehavior.Cascade);
 
+                builder.Entity<DigitalFile>()
+                       .HasIndex(df => new { df.ItemId, df.OriginalStoredFileName })
+                       .IsUnique();
+
+                builder.Entity<DigitalFile>()
+                       .HasIndex(df => df.OriginalChecksumSha256);
+                
                 builder.Entity<Item>()
                        .HasIndex(i => new { i.FundId, i.InventoryNumber })
                        .IsUnique();

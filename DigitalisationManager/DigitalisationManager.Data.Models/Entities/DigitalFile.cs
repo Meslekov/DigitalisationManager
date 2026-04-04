@@ -4,35 +4,55 @@
     using System.ComponentModel.DataAnnotations.Schema;
 
     using static DigitalisationManager.GCommon.ValidationConstants.DigitalFile;
+
     public class DigitalFile
     {
         [Key]
         public int Id { get; set; }
 
-
         [Required]
-        [MaxLength(OriginalNameMax)]
+        [StringLength(OriginalNameMax)]
         public string OriginalFileName { get; set; } = null!;
 
         [Required]
-        [MaxLength(StoredNameMax)]
-        public string StoredFileName { get; set; } = null!;
+        [StringLength(StoredNameMax)]
+        public string OriginalStoredFileName { get; set; } = null!;
 
         [Required]
-        [MaxLength(PathMax)]
-        public string RelativePath { get; set; } = null!;
+        [StringLength(PathMax)]
+        public string OriginalRelativePath { get; set; } = null!;
 
         [Required]
-        public long SizeBytes { get; set; }
+        [StringLength(ContentTypeMax)]
+        public string OriginalContentType { get; set; } = null!;
 
         [Required]
-        public DateTime UploadedAt { get; set; }
+        public long OriginalSizeBytes { get; set; }
 
-        [MaxLength(ChecksumMax)]
-        public string? ChecksumSha256 { get; set; }
+        [Required]
+        [StringLength(ChecksumMax)]
+        public string OriginalChecksumSha256 { get; set; } = null!;
+
+        [Required]
+        [StringLength(StoredNameMax)]
+        public string PreviewStoredFileName { get; set; } = null!;
+
+        [Required]
+        [StringLength(PathMax)]
+        public string PreviewRelativePath { get; set; } = null!;
+
+        [Required]
+        [StringLength(ContentTypeMax)]
+        public string PreviewContentType { get; set; } = null!;
+
+        [Required]
+        public long PreviewSizeBytes { get; set; }
 
         [Required]
         public bool IsDownloadAllowed { get; set; }
+
+        [Required]
+        public DateTime UploadedAt { get; set; }
 
         [Required]
         [ForeignKey(nameof(Item))]
