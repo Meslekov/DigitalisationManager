@@ -10,6 +10,7 @@
 
         Task<ItemFormViewModel> GetCreateAsync(int? fundId);
 
+
         Task<int> CreateAsync(ItemFormViewModel model);
 
         Task<ItemFormViewModel?> GetForEditAsync(int id);
@@ -19,5 +20,6 @@
         Task<ItemDetailsViewModel?> GetForDeleteAsync(int id);
 
         Task<(bool Success, string? Error)> DeleteAsync(int id);
+        Task PopulateFormModelAsync(ItemFormViewModel model);
     }
 }

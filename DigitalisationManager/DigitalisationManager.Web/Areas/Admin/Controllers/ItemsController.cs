@@ -19,15 +19,18 @@
         [HttpGet]
         public async Task<IActionResult> Index(int? fundId, string? q, int page = 1, int pageSize = 20)
         {
-            var model = await itemService.GetIndexAsync(fundId, q, page, pageSize);
+            ItemQueryViewModel model = await itemService.GetIndexAsync(fundId, q, page, pageSize);
             return View(model);
         }
 
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
-            var model = await itemService.GetDetailsAsync(id);
-            if (model is null) return NotFound();
+            ItemDetailsViewModel? model = await itemService.GetDetailsAsync(id);
+            if (model is null)
+            {
+                return NotFound();
+            }
 
             model.Files = await dgFileService.ListByItemAsync(id);
             model.FilesCount = model.Files.Count;
@@ -38,7 +41,7 @@
         [HttpGet]
         public async Task<IActionResult> Create(int? fundId)
         {
-            var model = await itemService.GetCreateAsync(fundId);
+            ItemFormViewModel model = await itemService.GetCreateAsync(fundId);
             return View(model);
         }
 
@@ -47,13 +50,13 @@
         {
             if (!ModelState.IsValid)
             {
-                model = await itemService.GetCreateAsync(model.FundId);
+                await itemService.PopulateFormModelAsync(model);
                 return View(model);
             }
 
             try
             {
-                var newId = await itemService.CreateAsync(model);
+                int newId = await itemService.CreateAsync(model);
                 return RedirectToAction(nameof(Details), new { id = newId });
             }
             catch (DbUpdateException)
@@ -61,12 +64,7 @@
                 ModelState.AddModelError(nameof(ItemFormViewModel.InventoryNumber),
                     "Inventory number must be unique within the selected fund.");
 
-                model = await itemService.GetCreateAsync(model.FundId);
-                model.InventoryNumber = model.InventoryNumber;
-                model.Description = model.Description;
-                model.DocumentDateText = model.DocumentDateText;
-                model.Status = model.Status;
-
+                await itemService.PopulateFormModelAsync(model);
                 return View(model);
             }
         }
@@ -74,8 +72,12 @@
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var model = await itemService.GetForEditAsync(id);
-            if (model is null) return NotFound();
+            ItemFormViewModel? model = await itemService.GetForEditAsync(id);
+            if (model is null)
+            {
+                return NotFound();
+            }
+
             return View(model);
         }
 
@@ -89,16 +91,16 @@
 
             if (!ModelState.IsValid)
             {
-                var vm = await itemService.GetForEditAsync(id);
-                return View(vm ?? model);
+                await itemService.PopulateFormModelAsync(model);
+                return View(model);
             }
 
-            var result = await itemService.UpdateAsync(model);
+            (bool Success, string? Error) result = await itemService.UpdateAsync(model);
             if (!result.Success)
             {
                 ModelState.AddModelError(string.Empty, result.Error ?? "Unable to update item.");
-                var vm = await itemService.GetForEditAsync(id);
-                return View(vm ?? model);
+                await itemService.PopulateFormModelAsync(model);
+                return View(model);
             }
 
             return RedirectToAction(nameof(Details), new { id = model.Id });
@@ -107,15 +109,19 @@
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            var model = await itemService.GetForDeleteAsync(id);
-            if (model is null) return NotFound();
+            ItemDetailsViewModel? model = await itemService.GetForDeleteAsync(id);
+            if (model is null)
+            {
+                return NotFound();
+            }
+
             return View(model);
         }
 
         [HttpPost]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var result = await itemService.DeleteAsync(id);
+            (bool Success, string? Error) result = await itemService.DeleteAsync(id);
 
             if (!result.Success)
             {

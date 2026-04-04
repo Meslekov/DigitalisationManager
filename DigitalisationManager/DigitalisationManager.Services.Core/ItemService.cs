@@ -8,8 +8,6 @@
     using DigitalisationManager.Web.ViewModels.Item;
     using DigitalisationManager.Web.ViewModels.Shared;
     using Microsoft.EntityFrameworkCore;
-    using System.Collections.Generic;
-    using System.Linq;
 
     public class ItemService : IItemService
     {
@@ -27,8 +25,15 @@
                 FundId = fundId ?? 0
             };
 
-            vm.Funds = await GetFundsSelectListAsync();
+            await PopulateFormModelAsync(vm);
+
             return vm;
+        }
+
+        public async Task PopulateFormModelAsync(ItemFormViewModel model)
+        {
+            model.Funds = await GetFundsSelectListAsync();
+            model.Categories = await GetCategoriesSelectListAsync();
         }
 
         public async Task<int> CreateAsync(ItemFormViewModel model)
@@ -36,6 +41,7 @@
             Item entity = new Item
             {
                 FundId = model.FundId,
+                CategoryId = model.CategoryId,
                 InventoryNumber = model.InventoryNumber.Trim(),
                 Description = string.IsNullOrWhiteSpace(model.Description) ? null : model.Description.Trim(),
                 DocumentDateText = string.IsNullOrWhiteSpace(model.DocumentDateText) ? null : model.DocumentDateText.Trim(),
@@ -47,29 +53,44 @@
 
             await context.SaveChangesAsync();
 
+            await AppendHistoryAsync(entity.Id, "Item created", "Initial item record was created.");
+
             return entity.Id;
         }
-
 
         public async Task<ItemDetailsViewModel?> GetDetailsAsync(int id)
         {
             return await context.Items
-               .AsNoTracking()
-               .Include(i => i.Fund)
-               .Where(i => i.Id == id)
-               .Select(i => new ItemDetailsViewModel
-               {
-                   Id = i.Id,
-                   FundId = i.FundId,
-                   FundCode = i.Fund.Code,
-                   InventoryNumber = i.InventoryNumber,
-                   Description = i.Description,
-                   DocumentDateText = i.DocumentDateText,
-                   Status = i.Status,
-                   CreatedAt = i.CreatedAt,
-                   FilesCount = i.DigitalFiles.Count
-               })
-               .FirstOrDefaultAsync();
+                .AsNoTracking()
+                .Include(i => i.Fund)
+                .Include(i => i.Category)
+                .Include(i => i.ItemHistories)
+                .Where(i => i.Id == id)
+                .Select(i => new ItemDetailsViewModel
+                {
+                    Id = i.Id,
+                    FundId = i.FundId,
+                    FundCode = i.Fund.Code,
+                    CategoryId = i.CategoryId,
+                    CategoryName = i.Category.Name,
+                    InventoryNumber = i.InventoryNumber,
+                    Description = i.Description,
+                    DocumentDateText = i.DocumentDateText,
+                    Status = i.Status,
+                    CreatedAt = i.CreatedAt,
+                    FilesCount = i.DigitalFiles.Count,
+                    HistoryEntries = i.ItemHistories
+                        .OrderByDescending(h => h.CreatedAt)
+                        .Select(h => new ItemHistoryListViewModel
+                        {
+                            Id = h.Id,
+                            Action = h.Action,
+                            Description = h.Description,
+                            CreatedAt = h.CreatedAt
+                        })
+                        .ToList()
+                })
+                .FirstOrDefaultAsync();
         }
 
         public async Task<ItemQueryViewModel> GetIndexAsync(int? fundId, string? q, int page, int pageSize)
@@ -89,9 +110,10 @@
                 })
                 .ToListAsync();
 
-            IQueryable<Data.Models.Entities.Item> query = context.Items
+            IQueryable<Item> query = context.Items
                 .AsNoTracking()
                 .Include(i => i.Fund)
+                .Include(i => i.Category)
                 .Include(i => i.DigitalFiles)
                 .AsQueryable();
 
@@ -105,7 +127,8 @@
                 query = query.Where(i =>
                     i.InventoryNumber.Contains(trimmedQ) ||
                     (i.Description != null && i.Description.Contains(trimmedQ)) ||
-                    (i.DocumentDateText != null && i.DocumentDateText.Contains(trimmedQ)));
+                    (i.DocumentDateText != null && i.DocumentDateText.Contains(trimmedQ)) ||
+                    i.Category.Name.Contains(trimmedQ));
             }
 
             int totalCount = await query.CountAsync();
@@ -129,11 +152,14 @@
                     Id = i.Id,
                     FundId = i.FundId,
                     FundCode = i.Fund.Code,
+                    CategoryId = i.CategoryId,
+                    CategoryName = i.Category.Name,
                     InventoryNumber = i.InventoryNumber,
                     Description = i.Description,
                     DocumentDateText = i.DocumentDateText,
                     Status = i.Status,
-                    FilesCount = i.DigitalFiles.Count
+                    FilesCount = i.DigitalFiles.Count,
+                    CreatedAt = i.CreatedAt
                 })
                 .ToListAsync();
 
@@ -153,16 +179,16 @@
             };
         }
 
-
         public async Task<ItemFormViewModel?> GetForEditAsync(int id)
         {
-            var vm = await context.Items
+            ItemFormViewModel? vm = await context.Items
                 .AsNoTracking()
                 .Where(i => i.Id == id)
                 .Select(i => new ItemFormViewModel
                 {
                     Id = i.Id,
                     FundId = i.FundId,
+                    CategoryId = i.CategoryId,
                     InventoryNumber = i.InventoryNumber,
                     Description = i.Description,
                     DocumentDateText = i.DocumentDateText,
@@ -170,20 +196,33 @@
                 })
                 .FirstOrDefaultAsync();
 
-            if (vm is null) return null;
+            if (vm is null)
+            {
+                return null;
+            }
 
-            vm.Funds = await GetFundsSelectListAsync();
+            await PopulateFormModelAsync(vm);
+
             return vm;
         }
 
         public async Task<(bool Success, string? Error)> UpdateAsync(ItemFormViewModel model)
         {
-            if (model.Id is null) return (false, "Item not found.");
+            if (model.Id is null)
+            {
+                return (false, "Item not found.");
+            }
 
-            var entity = await context.Items.FirstOrDefaultAsync(i => i.Id == model.Id.Value);
-            if (entity is null) return (false, "Item not found.");
+            Item? entity = await context.Items.FirstOrDefaultAsync(i => i.Id == model.Id.Value);
+            if (entity is null)
+            {
+                return (false, "Item not found.");
+            }
+
+            string? historyDescription = BuildUpdateHistoryDescription(entity, model);
 
             entity.FundId = model.FundId;
+            entity.CategoryId = model.CategoryId;
             entity.InventoryNumber = model.InventoryNumber.Trim();
             entity.Description = string.IsNullOrWhiteSpace(model.Description) ? null : model.Description.Trim();
             entity.DocumentDateText = string.IsNullOrWhiteSpace(model.DocumentDateText) ? null : model.DocumentDateText.Trim();
@@ -192,6 +231,12 @@
             try
             {
                 await context.SaveChangesAsync();
+
+                if (!string.IsNullOrWhiteSpace(historyDescription))
+                {
+                    await AppendHistoryAsync(entity.Id, "Item updated", historyDescription);
+                }
+
                 return (true, null);
             }
             catch (DbUpdateException)
@@ -201,22 +246,83 @@
         }
 
         public async Task<ItemDetailsViewModel?> GetForDeleteAsync(int id)
-           => await GetDetailsAsync(id);
+            => await GetDetailsAsync(id);
 
         public async Task<(bool Success, string? Error)> DeleteAsync(int id)
         {
-            var entity = await context.Items
+            Item? entity = await context.Items
                 .Include(i => i.DigitalFiles)
                 .FirstOrDefaultAsync(i => i.Id == id);
 
-            if (entity is null) return (false, "Item not found.");
+            if (entity is null)
+            {
+                return (false, "Item not found.");
+            }
 
             if (entity.DigitalFiles.Any())
+            {
                 return (false, "Cannot delete this item because it has uploaded TIFF files. Delete the files first.");
+            }
 
             context.Items.Remove(entity);
             await context.SaveChangesAsync();
+
             return (true, null);
+        }
+
+        private async Task AppendHistoryAsync(int itemId, string action, string? description)
+        {
+            ItemHistory historyEntry = new ItemHistory
+            {
+                ItemId = itemId,
+                Action = action,
+                Description = description,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            context.ItemHistories.Add(historyEntry);
+            await context.SaveChangesAsync();
+        }
+
+        private string? BuildUpdateHistoryDescription(Item entity, ItemFormViewModel model)
+        {
+            List<string> changes = new List<string>();
+
+            if (entity.FundId != model.FundId)
+            {
+                changes.Add("Fund changed.");
+            }
+
+            if (entity.CategoryId != model.CategoryId)
+            {
+                changes.Add("Category changed.");
+            }
+
+            if (entity.InventoryNumber != model.InventoryNumber.Trim())
+            {
+                changes.Add("Inventory number updated.");
+            }
+
+            string? newDescription = string.IsNullOrWhiteSpace(model.Description) ? null : model.Description.Trim();
+            if (entity.Description != newDescription)
+            {
+                changes.Add("Description updated.");
+            }
+
+            string? newDocumentDateText = string.IsNullOrWhiteSpace(model.DocumentDateText) ? null : model.DocumentDateText.Trim();
+            if (entity.DocumentDateText != newDocumentDateText)
+            {
+                changes.Add("Document date updated.");
+            }
+
+            if (entity.Status != model.Status)
+            {
+                changes.Add("Status updated.");
+            }
+
+            return changes.Count == 0
+                ? null
+                : string.Join(" ", changes);
         }
 
         private async Task<List<DropdownOptionViewModel>> GetFundsSelectListAsync()
@@ -228,6 +334,20 @@
                 {
                     Value = f.Id.ToString(),
                     Text = $"{f.Code} - {f.Title}"
+                })
+                .ToListAsync();
+        }
+
+        private async Task<List<DropdownOptionViewModel>> GetCategoriesSelectListAsync()
+        {
+            return await context.Categories
+                .AsNoTracking()
+                .Where(c => c.IsActive)
+                .OrderBy(c => c.Name)
+                .Select(c => new DropdownOptionViewModel
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.Name
                 })
                 .ToListAsync();
         }
