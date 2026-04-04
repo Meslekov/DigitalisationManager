@@ -41,5 +41,14 @@
             public const int DescriptionMax = 500;
         }
 
+        public static class ItemHistory
+        {
+            public const int ActionMin = 3;
+            public const int ActionMax = 100;
+
+            public const int DescriptionMax = 1000;
+        }
+
+
     }
 }
