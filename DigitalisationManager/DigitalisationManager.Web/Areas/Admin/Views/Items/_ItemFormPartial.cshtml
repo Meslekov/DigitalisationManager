@@ -25,6 +25,26 @@
     </div>
 
     <div class="col-md-6">
+        <label class="form-label">Category</label>
+        <select class="form-select" name="categoryId">
+            <option value="">Uncategorized</option>
+
+            @foreach (var c in Model.Categories)
+            {
+                if (Model.CategoryId.ToString() == c.Value)
+                {
+                    <option value="@c.Value" selected>@c.Text</option>
+                }
+                else
+                {
+                    <option value="@c.Value">@c.Text</option>
+                }
+            }
+        </select>
+        <span asp-validation-for="CategoryId" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
         <label asp-for="InventoryNumber" class="form-label"></label>
         <input asp-for="InventoryNumber" class="form-control" />
         <span asp-validation-for="InventoryNumber" class="text-danger"></span>

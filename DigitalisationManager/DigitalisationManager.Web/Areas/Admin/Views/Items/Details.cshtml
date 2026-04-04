@@ -52,6 +52,11 @@
             <dt class="col-sm-3">Fund</dt>
             <dd class="col-sm-9">@Model.FundCode</dd>
 
+            <dt class="col-sm-3">Category</dt>
+            <dd class="col-sm-9">
+                @Model.CategoryName
+            </dd>
+
             <dt class="col-sm-3">Document date</dt>
             <dd class="col-sm-9">
                 @(string.IsNullOrWhiteSpace(Model.DocumentDateText)
@@ -82,6 +87,41 @@
             </dd>
         </dl>
     </div>
+</div>
+
+<div class="mt-4">
+    <h2 class="h5">Item history</h2>
+
+    @if (Model.HistoryEntries == null || Model.HistoryEntries.Count == 0)
+    {
+        <div class="text-muted">No history entries yet.</div>
+    }
+    else
+    {
+        <div class="card shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-sm align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Action</th>
+                            <th>Description</th>
+                            <th>Created</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var entry in Model.HistoryEntries)
+                        {
+                            <tr>
+                                <td class="fw-semibold">@entry.Action</td>
+                                <td>@(string.IsNullOrWhiteSpace(entry.Description) ? "—" : entry.Description)</td>
+                                <td>@entry.CreatedAt.ToString("yyyy-MM-dd HH:mm") (UTC)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
 </div>
 
 <div class="mt-4">

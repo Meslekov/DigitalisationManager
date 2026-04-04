@@ -38,7 +38,7 @@
                        name="q"
                        value="@Model.Q"
                        class="form-control"
-                       placeholder="Inventory number, description, document date..." />
+                       placeholder="Inventory number, description, document date, category..." />
             </div>
 
             <div class="col-md-2 d-grid">
@@ -75,6 +75,11 @@ else
                         <div class="mb-2">
                             <div class="small text-muted">Fund</div>
                             <div>@item.FundCode</div>
+                        </div>
+
+                        <div class="mb-2">
+                            <div class="small text-muted">Category</div>
+                            <div>@item.CategoryName</div>
                         </div>
 
                         <div class="mb-2">

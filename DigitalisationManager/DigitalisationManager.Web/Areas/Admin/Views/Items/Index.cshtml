@@ -40,7 +40,7 @@
                        name="q"
                        value="@Model.Q"
                        class="form-control"
-                       placeholder="Inventory number, description, document date..." />
+                       placeholder="Inventory number, description, document date, category..." />
             </div>
 
             <div class="col-md-2 d-grid">
@@ -70,6 +70,7 @@ else
                     <tr>
                         <th>Inventory number</th>
                         <th>Fund</th>
+                        <th>Category</th>
                         <th>Description</th>
                         <th>Document date</th>
                         <th>Status</th>
@@ -83,6 +84,7 @@ else
                         <tr>
                             <td class="fw-semibold">@item.InventoryNumber</td>
                             <td>@item.FundCode</td>
+                            <td>@item.CategoryName</td>
                             <td>@(string.IsNullOrWhiteSpace(item.Description) ? "—" : item.Description)</td>
                             <td>@(string.IsNullOrWhiteSpace(item.DocumentDateText) ? "—" : item.DocumentDateText)</td>
                             <td>
