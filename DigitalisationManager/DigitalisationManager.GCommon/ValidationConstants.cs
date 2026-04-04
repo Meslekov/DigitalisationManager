@@ -32,5 +32,14 @@
             public const int PathMax = 500;
             public const int ChecksumMax = 64;
         }
+
+        public static class Category
+        {
+            public const int NameMin = 2;
+            public const int NameMax = 100;
+
+            public const int DescriptionMax = 500;
+        }
+
     }
 }
