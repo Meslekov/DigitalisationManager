@@ -9,6 +9,9 @@
         public int FundId { get; set; }
         public string FundCode { get; set; } = null!;
 
+        public int CategoryId { get; set; }
+        public string CategoryName { get; set; } = null!;
+
         public string InventoryNumber { get; set; } = null!;
         public string? Description { get; set; }
         public string? DocumentDateText { get; set; }

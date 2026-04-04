@@ -18,6 +18,13 @@
 
         public List<DropdownOptionViewModel> Funds { get; set; } = new();
 
+        [Required]
+        [Display(Name = "Category")]
+        public int CategoryId { get; set; }
+
+        public List<DropdownOptionViewModel> Categories { get; set; } = new();
+
+
         [Required, StringLength(InventoryMax, MinimumLength = InventoryMin)]
         [Display(Name = "Inventory number")]
         public string InventoryNumber { get; set; } = null!;
