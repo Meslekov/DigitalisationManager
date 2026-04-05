@@ -23,16 +23,22 @@
             };
 
         private readonly DigitalisationManagerDbContext context;
-        private readonly IFileStorageService fileStorage;
+        private readonly IOriginalFileStorageService originalFileStorageService;
+        private readonly IPreviewImageStorageService previewImageStorageService;
+        private readonly ITiffConversionService tiffConversionService;
         private readonly FileStorageOptions options;
 
         public DigitalFileService(
             DigitalisationManagerDbContext context,
-            IFileStorageService fileStorage,
+            IOriginalFileStorageService originalFileStorageService,
+            IPreviewImageStorageService previewImageStorageService,
+            ITiffConversionService tiffConversionService,
             IOptions<FileStorageOptions> options)
         {
             this.context = context;
-            this.fileStorage = fileStorage;
+            this.originalFileStorageService = originalFileStorageService;
+            this.previewImageStorageService = previewImageStorageService;
+            this.tiffConversionService = tiffConversionService;
             this.options = options.Value;
         }
 
@@ -56,23 +62,9 @@
                 .ToListAsync();
         }
 
-        public async Task<(bool Success, string? Error)> UploadAsync(int itemId, IFormFile file)
+        public async Task<BatchDigitalFileUploadResultViewModel> UploadAsync(int itemId, IEnumerable<IFormFile> files)
         {
-            if (file is null || file.Length == 0)
-            {
-                return (false, "Please choose a file.");
-            }
-
-            if (file.Length > options.MaxTiffUploadSizeBytes)
-            {
-                return (false, $"File is too large. Max allowed is {options.MaxTiffUploadSizeBytes:N0} bytes.");
-            }
-
-            string extension = Path.GetExtension(file.FileName);
-            if (string.IsNullOrWhiteSpace(extension) || !AllowedExt.Contains(extension))
-            {
-                return (false, "Only .tif / .tiff files are allowed.");
-            }
+            BatchDigitalFileUploadResultViewModel batchResult = new BatchDigitalFileUploadResultViewModel();
 
             Item? item = await context.Items
                 .Include(i => i.DigitalFiles)
@@ -80,54 +72,136 @@
 
             if (item is null)
             {
-                return (false, "Item not found.");
+                batchResult.TotalCount = 0;
+                batchResult.SuccessCount = 0;
+                batchResult.FailedCount = 1;
+                batchResult.Results.Add(new DigitalFileUploadResultViewModel
+                {
+                    FileName = $"Item {itemId}",
+                    Success = false,
+                    Error = "Item not found."
+                });
+
+                return batchResult;
             }
 
-            string normalizedExtension = extension.Equals(".tiff", StringComparison.OrdinalIgnoreCase)
-                ? ".tiff"
-                : ".tif";
+            List<IFormFile> fileList = files?
+                .Where(f => f is not null)
+                .ToList() ?? new List<IFormFile>();
 
-            string originalStoredName = $"{Guid.NewGuid():N}{normalizedExtension}";
-            string originalRelativePath = $"Funds/{item.FundId}/Items/{item.Id}/Originals/{originalStoredName}";
+            batchResult.TotalCount = fileList.Count;
 
-            await using MemoryStream memoryStream = new MemoryStream();
-            await using Stream inputStream = file.OpenReadStream();
-            await inputStream.CopyToAsync(memoryStream);
-
-            memoryStream.Position = 0;
-            string sha256 = ComputeSha256Hex(memoryStream);
-
-            memoryStream.Position = 0;
-            await fileStorage.SaveAsync(originalRelativePath, memoryStream);
-
-          
-            DigitalFile entity = new DigitalFile
+            if (fileList.Count == 0)
             {
-                ItemId = item.Id,
-                OriginalFileName = Path.GetFileName(file.FileName),
-                OriginalStoredFileName = originalStoredName,
-                OriginalRelativePath = originalRelativePath,
-                OriginalContentType = "image/tiff",
-                OriginalSizeBytes = file.Length,
-                OriginalChecksumSha256 = sha256,
-                PreviewStoredFileName = originalStoredName,
-                PreviewRelativePath = originalRelativePath,
-                PreviewContentType = "image/tiff",
-                PreviewSizeBytes = file.Length,
-                IsDownloadAllowed = false,
-                UploadedAt = DateTime.UtcNow
-            };
+                batchResult.FailedCount = 1;
+                batchResult.Results.Add(new DigitalFileUploadResultViewModel
+                {
+                    FileName = "No files selected",
+                    Success = false,
+                    Error = "Please choose at least one TIFF file."
+                });
 
-            context.DigitalFiles.Add(entity);
-
-            if (!item.DigitalFiles.Any())
-            {
-                item.Status = ItemStatus.Digitized;
+                return batchResult;
             }
 
-            await context.SaveChangesAsync();
+            foreach (IFormFile file in fileList)
+            {
+                DigitalFileUploadResultViewModel fileResult = new DigitalFileUploadResultViewModel
+                {
+                    FileName = file.FileName
+                };
 
-            return (true, null);
+                try
+                {
+                    string? validationError = ValidateUploadFile(file);
+                    if (validationError is not null)
+                    {
+                        fileResult.Success = false;
+                        fileResult.Error = validationError;
+                        batchResult.Results.Add(fileResult);
+                        batchResult.FailedCount++;
+                        continue;
+                    }
+
+                    string extension = Path.GetExtension(file.FileName);
+                    string normalizedExtension = extension.Equals(".tiff", StringComparison.OrdinalIgnoreCase)
+                        ? ".tiff"
+                        : ".tif";
+
+                    await using MemoryStream originalBuffer = new MemoryStream();
+                    await using Stream inputStream = file.OpenReadStream();
+                    await inputStream.CopyToAsync(originalBuffer);
+
+                    originalBuffer.Position = 0;
+                    string sha256 = ComputeSha256Hex(originalBuffer);
+
+                    originalBuffer.Position = 0;
+                    byte[] previewJpegBytes = await tiffConversionService.ConvertFirstPageToJpegAsync(originalBuffer);
+
+                    originalBuffer.Position = 0;
+                    var originalStorageResult = await originalFileStorageService.SaveAsync(
+                        item.FundId,
+                        item.Id,
+                        normalizedExtension,
+                        originalBuffer);
+
+                    await using MemoryStream previewBuffer = new MemoryStream(previewJpegBytes);
+                    var previewStorageResult = await previewImageStorageService.SaveAsync(
+                        item.FundId,
+                        item.Id,
+                        previewBuffer);
+
+                    DigitalFile digitalFile = new DigitalFile
+                    {
+                        ItemId = item.Id,
+                        OriginalFileName = Path.GetFileName(file.FileName),
+                        OriginalStoredFileName = originalStorageResult.StoredFileName,
+                        OriginalRelativePath = originalStorageResult.RelativePath,
+                        OriginalContentType = "image/tiff",
+                        OriginalSizeBytes = originalStorageResult.SizeBytes,
+                        OriginalChecksumSha256 = sha256,
+                        PreviewStoredFileName = previewStorageResult.StoredFileName,
+                        PreviewRelativePath = previewStorageResult.RelativePath,
+                        PreviewContentType = "image/jpeg",
+                        PreviewSizeBytes = previewStorageResult.SizeBytes,
+                        IsDownloadAllowed = false,
+                        UploadedAt = DateTime.UtcNow
+                    };
+
+                    context.DigitalFiles.Add(digitalFile);
+                    await context.SaveChangesAsync();
+
+                    fileResult.Success = true;
+                    batchResult.Results.Add(fileResult);
+                    batchResult.SuccessCount++;
+                }
+                catch (DbUpdateException)
+                {
+                    fileResult.Success = false;
+                    fileResult.Error = "Database error occurred while saving the file.";
+                    batchResult.Results.Add(fileResult);
+                    batchResult.FailedCount++;
+                }
+                catch (Exception ex)
+                {
+                    fileResult.Success = false;
+                    fileResult.Error = $"Processing failed: {ex.Message}";
+                    batchResult.Results.Add(fileResult);
+                    batchResult.FailedCount++;
+                }
+            }
+
+            if (batchResult.SuccessCount > 0)
+            {
+                bool itemHasFiles = await context.DigitalFiles.AnyAsync(df => df.ItemId == item.Id);
+                if (itemHasFiles && item.Status != ItemStatus.Digitized)
+                {
+                    item.Status = ItemStatus.Digitized;
+                    await context.SaveChangesAsync();
+                }
+            }
+
+            return batchResult;
         }
 
         public async Task<(byte[] Content, string ContentType, string DownloadName)?> DownloadOriginalAsync(int id)
@@ -141,12 +215,12 @@
                 return null;
             }
 
-            if (!fileStorage.Exists(digitalFile.OriginalRelativePath))
+            if (!originalFileStorageService.Exists(digitalFile.OriginalRelativePath))
             {
                 return null;
             }
 
-            await using Stream stream = fileStorage.OpenRead(digitalFile.OriginalRelativePath);
+            await using Stream stream = originalFileStorageService.OpenRead(digitalFile.OriginalRelativePath);
             await using MemoryStream output = new MemoryStream();
             await stream.CopyToAsync(output);
 
@@ -168,14 +242,14 @@
                 return null;
             }
 
-            if (!fileStorage.Exists(digitalFile.PreviewRelativePath))
+            if (!previewImageStorageService.Exists(digitalFile.PreviewRelativePath))
             {
                 return null;
             }
 
             string previewDownloadName = Path.GetFileNameWithoutExtension(digitalFile.OriginalFileName) + ".jpg";
 
-            await using Stream stream = fileStorage.OpenRead(digitalFile.PreviewRelativePath);
+            await using Stream stream = previewImageStorageService.OpenRead(digitalFile.PreviewRelativePath);
             await using MemoryStream output = new MemoryStream();
             await stream.CopyToAsync(output);
 
@@ -197,12 +271,12 @@
                 return null;
             }
 
-            if (!fileStorage.Exists(digitalFile.PreviewRelativePath))
+            if (!previewImageStorageService.Exists(digitalFile.PreviewRelativePath))
             {
                 return null;
             }
 
-            await using Stream stream = fileStorage.OpenRead(digitalFile.PreviewRelativePath);
+            await using Stream stream = previewImageStorageService.OpenRead(digitalFile.PreviewRelativePath);
             await using MemoryStream output = new MemoryStream();
             await stream.CopyToAsync(output);
 
@@ -264,20 +338,14 @@
                 return (false, "File not found.");
             }
 
-            if (fileStorage.Exists(digitalFile.OriginalRelativePath))
+            if (originalFileStorageService.Exists(digitalFile.OriginalRelativePath))
             {
-                fileStorage.Delete(digitalFile.OriginalRelativePath);
+                originalFileStorageService.Delete(digitalFile.OriginalRelativePath);
             }
 
-            bool previewIsSeparateFile =
-                !string.Equals(
-                    digitalFile.PreviewRelativePath,
-                    digitalFile.OriginalRelativePath,
-                    StringComparison.OrdinalIgnoreCase);
-
-            if (previewIsSeparateFile && fileStorage.Exists(digitalFile.PreviewRelativePath))
+            if (previewImageStorageService.Exists(digitalFile.PreviewRelativePath))
             {
-                fileStorage.Delete(digitalFile.PreviewRelativePath);
+                previewImageStorageService.Delete(digitalFile.PreviewRelativePath);
             }
 
             context.DigitalFiles.Remove(digitalFile);
@@ -300,6 +368,27 @@
             await context.SaveChangesAsync();
 
             return (true, null);
+        }
+
+        private string? ValidateUploadFile(IFormFile file)
+        {
+            if (file is null || file.Length == 0)
+            {
+                return "File is empty.";
+            }
+
+            if (file.Length > options.MaxTiffUploadSizeBytes)
+            {
+                return $"File is too large. Max allowed is {options.MaxTiffUploadSizeBytes:N0} bytes.";
+            }
+
+            string extension = Path.GetExtension(file.FileName);
+            if (string.IsNullOrWhiteSpace(extension) || !AllowedExt.Contains(extension))
+            {
+                return "Only .tif / .tiff files are allowed.";
+            }
+
+            return null;
         }
 
         private static string ComputeSha256Hex(Stream stream)

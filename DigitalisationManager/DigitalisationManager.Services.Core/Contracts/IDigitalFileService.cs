@@ -8,7 +8,7 @@
     {
         Task<IReadOnlyList<DigitalFileListViewModel>> ListByItemAsync(int itemId);
 
-        Task<(bool Success, string? Error)> UploadAsync(int itemId, IFormFile file);
+        Task<BatchDigitalFileUploadResultViewModel> UploadAsync(int itemId, IEnumerable<IFormFile> files);
 
         Task<(byte[] Content, string ContentType, string DownloadName)?> DownloadOriginalAsync(int id);
 

@@ -1,8 +1,8 @@
 ﻿namespace DigitalisationManager.Web.Areas.Admin.Controllers
 {
-    using Microsoft.AspNetCore.Mvc;
-
     using DigitalisationManager.Services.Core.Contracts;
+    using DigitalisationManager.Web.ViewModels.DigitalFile;
+    using Microsoft.AspNetCore.Mvc;
 
     public class DigitalFilesController : AdminBaseController
     {
@@ -20,23 +20,31 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> Upload(int itemId, IFormFile file)
+        public async Task<IActionResult> Upload(int itemId, List<IFormFile> files)
         {
-            if (file is null)
+            BatchDigitalFileUploadResultViewModel result = await digitalFileService.UploadAsync(itemId, files);
+
+            if (result.SuccessCount > 0 && result.FailedCount == 0)
             {
-                TempData["Error"] = "Please select a file.";
-                return RedirectToAction("Details", "Items", new { id = itemId });
+                TempData["Success"] = $"{result.SuccessCount} file(s) uploaded successfully.";
             }
-
-            (bool Success, string? Error) result = await digitalFileService.UploadAsync(itemId, file);
-
-            if (!result.Success)
+            else if (result.SuccessCount > 0 && result.FailedCount > 0)
             {
-                TempData["Error"] = result.Error;
+                string failedFiles = string.Join("; ",
+                    result.Results
+                        .Where(r => !r.Success)
+                        .Select(r => $"{r.FileName}: {r.Error}"));
+
+                TempData["Warning"] = $"{result.SuccessCount} file(s) uploaded, {result.FailedCount} failed. {failedFiles}";
             }
             else
             {
-                TempData["Success"] = "File uploaded successfully.";
+                string failedFiles = string.Join("; ",
+                    result.Results
+                        .Where(r => !r.Success)
+                        .Select(r => $"{r.FileName}: {r.Error}"));
+
+                TempData["Error"] = failedFiles;
             }
 
             return RedirectToAction("Details", "Items", new { id = itemId });
