@@ -4,6 +4,7 @@ using DigitalisationManager.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DigitalisationManager.Data.Migrations
 {
     [DbContext(typeof(DigitalisationManagerDbContext))]
-    partial class DigitalisationManagerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260405114031_RefactorDigitalFileForTiffPreviewWorkflow")]
+    partial class RefactorDigitalFileForTiffPreviewWorkflow
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
