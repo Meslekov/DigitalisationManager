@@ -14,6 +14,7 @@
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Upload(int itemId, List<IFormFile> files)
         {
             BatchDigitalFileUploadResultViewModel result = await digitalFileService.UploadAsync(itemId, files);
@@ -100,6 +101,7 @@
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> SetDownloadAllowed(int id, int itemId, bool isAllowed)
         {
             (bool Success, string? Error) result = await digitalFileService.SetDownloadAllowedAsync(id, isAllowed);
@@ -119,6 +121,7 @@
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id, int itemId)
         {
             (bool Success, string? Error) result = await digitalFileService.DeleteAsync(id);
