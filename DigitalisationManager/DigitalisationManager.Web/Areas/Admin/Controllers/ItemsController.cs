@@ -46,6 +46,7 @@
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ItemFormViewModel model)
         {
             if (!ModelState.IsValid)
@@ -58,6 +59,12 @@
             {
                 int newId = await itemService.CreateAsync(model);
                 return RedirectToAction(nameof(Details), new { id = newId });
+            }
+            catch (InvalidOperationException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                await itemService.PopulateFormModelAsync(model);
+                return View(model);
             }
             catch (DbUpdateException)
             {
@@ -82,6 +89,7 @@
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, ItemFormViewModel model)
         {
             if (model.Id != id)
@@ -119,6 +127,7 @@
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             (bool Success, string? Error) result = await itemService.DeleteAsync(id);
