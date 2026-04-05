@@ -4,10 +4,8 @@
 
     using DigitalisationManager.Services.Core.Contracts;
 
-    
     public class DigitalFilesController : AdminBaseController
     {
-
         private readonly IDigitalFileService digitalFileService;
 
         public DigitalFilesController(IDigitalFileService digitalFileService)
@@ -30,16 +28,16 @@
                 return RedirectToAction("Details", "Items", new { id = itemId });
             }
 
-            using var stream = file.OpenReadStream();
-
-            var result = await digitalFileService.UploadTiffAsync(
-                itemId,
-                stream,
-                file.FileName,
-                file.Length);
+            (bool Success, string? Error) result = await digitalFileService.UploadAsync(itemId, file);
 
             if (!result.Success)
+            {
                 TempData["Error"] = result.Error;
+            }
+            else
+            {
+                TempData["Success"] = "File uploaded successfully.";
+            }
 
             return RedirectToAction("Details", "Items", new { id = itemId });
         }
@@ -47,17 +45,19 @@
         [HttpGet]
         public async Task<IActionResult> Download(int id)
         {
-            var (found, originalName, stream) = await digitalFileService.OpenDownloadStreamAsync(id);
-            if (!found || stream is null) return NotFound();
+            var result = await digitalFileService.DownloadOriginalAsync(id);
+            if (result is null)
+            {
+                return NotFound();
+            }
 
-            // "image/tiff" is correct for TIFF
-            return File(stream, "image/tiff", originalName);
+            return File(result.Value.Content, result.Value.ContentType, result.Value.DownloadName);
         }
 
         [HttpPost]
         public async Task<IActionResult> SetDownloadAllowed(int id, int itemId, bool isAllowed)
         {
-            var result = await digitalFileService.SetDownloadAllowedAsync(id, isAllowed);
+            (bool Success, string? Error) result = await digitalFileService.SetDownloadAllowedAsync(id, isAllowed);
 
             if (!result.Success)
             {
@@ -76,11 +76,16 @@
         [HttpPost]
         public async Task<IActionResult> Delete(int id, int itemId)
         {
-            var result = await digitalFileService.DeleteAsync(id, itemId);
+            (bool Success, string? Error) result = await digitalFileService.DeleteAsync(id);
+
             if (!result.Success)
+            {
                 TempData["Error"] = result.Error;
+            }
             else
+            {
                 TempData["Success"] = "File deleted.";
+            }
 
             return RedirectToAction("Details", "Items", new { id = itemId });
         }

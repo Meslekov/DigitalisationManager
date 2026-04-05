@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\DigitalisationManager.Data.Models\DigitalisationManager.Data.Models.csproj" />
     <ProjectReference Include="..\DigitalisationManager.Data\DigitalisationManager.Data.csproj" />
     <ProjectReference Include="..\DigitalisationManager.Web.ViewModels\DigitalisationManager.Web.ViewModels.csproj" />

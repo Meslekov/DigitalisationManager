@@ -15,13 +15,13 @@
         [HttpGet]
         public async Task<IActionResult> Download(int id)
         {
-            var (found, originalName, stream) = await digitalFileService.OpenUserDownloadStreamAsync(id);
-            if (!found || stream is null)
+            var files = await digitalFileService.DownloadPreviewAsync(id);
+            if (files is null)
             {
                 return NotFound();
             }
 
-            return File(stream, "image/tiff", originalName);
+            return File(files.Value.Content, files.Value.ContentType, files.Value.DownloadName);
         }
     }
 }

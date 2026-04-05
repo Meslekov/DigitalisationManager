@@ -6,16 +6,20 @@
 
     public interface IDigitalFileService
     {
-        Task<(bool Success, string? Error)> UploadTiffAsync(
-            int itemId,
-            Stream contentStream,
-            string originalFileName,
-            long sizeBytes);
         Task<IReadOnlyList<DigitalFileListViewModel>> ListByItemAsync(int itemId);
 
-        Task<(bool Found, string? OriginalFileName, Stream? ContentStream)> OpenDownloadStreamAsync(int digitalFileId);
-        Task<(bool Found, string? OriginalFileName, Stream? ContentStream)> OpenUserDownloadStreamAsync(int digitalFileId);
-        Task<(bool Success, string? Error)> SetDownloadAllowedAsync(int digitalFileId, bool isAllowed);
-        Task<(bool Success, string? Error)> DeleteAsync(int digitalFileId, int itemId);
+        Task<(bool Success, string? Error)> UploadAsync(int itemId, IFormFile file);
+
+        Task<(byte[] Content, string ContentType, string DownloadName)?> DownloadOriginalAsync(int id);
+
+        Task<(byte[] Content, string ContentType, string DownloadName)?> DownloadPreviewAsync(int id);
+
+        Task<(byte[] Content, string ContentType)?> GetPreviewImageAsync(int id);
+
+        Task<DigitalFilePreviewViewModel?> GetPreviewPageAsync(int id, bool canDownloadOriginal, bool canDownloadPreview);
+
+        Task<(bool Success, string? Error)> DeleteAsync(int id);
+
+        Task<(bool Success, string? Error)> SetDownloadAllowedAsync(int id, bool isAllowed);
     }
 }
