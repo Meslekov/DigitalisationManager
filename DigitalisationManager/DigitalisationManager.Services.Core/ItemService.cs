@@ -38,19 +38,24 @@
 
         public async Task<int> CreateAsync(ItemFormViewModel model)
         {
+            string? validationError = await ValidateBusinessRulesAsync(model);
+            if (validationError is not null)
+            {
+                throw new InvalidOperationException(validationError);
+            }
+
             Item entity = new Item
             {
                 FundId = model.FundId,
                 CategoryId = model.CategoryId,
                 InventoryNumber = model.InventoryNumber.Trim(),
-                Description = string.IsNullOrWhiteSpace(model.Description) ? null : model.Description.Trim(),
-                DocumentDateText = string.IsNullOrWhiteSpace(model.DocumentDateText) ? null : model.DocumentDateText.Trim(),
+                Description = NormalizeOptionalText(model.Description),
+                DocumentDateText = NormalizeOptionalText(model.DocumentDateText),
                 Status = model.Status,
                 CreatedAt = DateTime.UtcNow
             };
 
             context.Items.Add(entity);
-
             await context.SaveChangesAsync();
 
             await AppendHistoryAsync(entity.Id, "Item created", "Initial item record was created.");
@@ -219,13 +224,30 @@
                 return (false, "Item not found.");
             }
 
-            string? historyDescription = BuildUpdateHistoryDescription(entity, model);
+            string? validationError = await ValidateBusinessRulesAsync(model, entity.Id);
+            if (validationError is not null)
+            {
+                return (false, validationError);
+            }
+
+            string normalizedInventoryNumber = model.InventoryNumber.Trim();
+            string? normalizedDescription = NormalizeOptionalText(model.Description);
+            string? normalizedDocumentDateText = NormalizeOptionalText(model.DocumentDateText);
+
+            string? historyDescription = BuildUpdateHistoryDescription(
+                entity,
+                model.FundId,
+                model.CategoryId,
+                normalizedInventoryNumber,
+                normalizedDescription,
+                normalizedDocumentDateText,
+                model.Status);
 
             entity.FundId = model.FundId;
             entity.CategoryId = model.CategoryId;
-            entity.InventoryNumber = model.InventoryNumber.Trim();
-            entity.Description = string.IsNullOrWhiteSpace(model.Description) ? null : model.Description.Trim();
-            entity.DocumentDateText = string.IsNullOrWhiteSpace(model.DocumentDateText) ? null : model.DocumentDateText.Trim();
+            entity.InventoryNumber = normalizedInventoryNumber;
+            entity.Description = normalizedDescription;
+            entity.DocumentDateText = normalizedDocumentDateText;
             entity.Status = model.Status;
 
             try
@@ -270,6 +292,43 @@
             return (true, null);
         }
 
+        private async Task<string?> ValidateBusinessRulesAsync(ItemFormViewModel model, int? currentItemId = null)
+        {
+            bool fundExists = await context.Funds
+                .AsNoTracking()
+                .AnyAsync(f => f.Id == model.FundId);
+
+            if (!fundExists)
+            {
+                return "Selected fund does not exist.";
+            }
+
+            bool categoryExists = await context.Categories
+                .AsNoTracking()
+                .AnyAsync(c => c.Id == model.CategoryId && c.IsActive);
+
+            if (!categoryExists)
+            {
+                return "Selected category does not exist or is inactive.";
+            }
+
+            string inventoryNumber = model.InventoryNumber.Trim();
+
+            bool duplicateExists = await context.Items
+                .AsNoTracking()
+                .AnyAsync(i =>
+                    i.FundId == model.FundId &&
+                    i.InventoryNumber == inventoryNumber &&
+                    (!currentItemId.HasValue || i.Id != currentItemId.Value));
+
+            if (duplicateExists)
+            {
+                return "Inventory number must be unique within the selected fund.";
+            }
+
+            return null;
+        }
+
         private async Task AppendHistoryAsync(int itemId, string action, string? description)
         {
             ItemHistory historyEntry = new ItemHistory
@@ -284,38 +343,43 @@
             await context.SaveChangesAsync();
         }
 
-        private string? BuildUpdateHistoryDescription(Item entity, ItemFormViewModel model)
+        private string? BuildUpdateHistoryDescription(
+            Item entity,
+            int fundId,
+            int categoryId,
+            string inventoryNumber,
+            string? description,
+            string? documentDateText,
+            GCommon.Enums.ItemStatus status)
         {
             List<string> changes = new List<string>();
 
-            if (entity.FundId != model.FundId)
+            if (entity.FundId != fundId)
             {
                 changes.Add("Fund changed.");
             }
 
-            if (entity.CategoryId != model.CategoryId)
+            if (entity.CategoryId != categoryId)
             {
                 changes.Add("Category changed.");
             }
 
-            if (entity.InventoryNumber != model.InventoryNumber.Trim())
+            if (entity.InventoryNumber != inventoryNumber)
             {
                 changes.Add("Inventory number updated.");
             }
 
-            string? newDescription = string.IsNullOrWhiteSpace(model.Description) ? null : model.Description.Trim();
-            if (entity.Description != newDescription)
+            if (entity.Description != description)
             {
                 changes.Add("Description updated.");
             }
 
-            string? newDocumentDateText = string.IsNullOrWhiteSpace(model.DocumentDateText) ? null : model.DocumentDateText.Trim();
-            if (entity.DocumentDateText != newDocumentDateText)
+            if (entity.DocumentDateText != documentDateText)
             {
                 changes.Add("Document date updated.");
             }
 
-            if (entity.Status != model.Status)
+            if (entity.Status != status)
             {
                 changes.Add("Status updated.");
             }
@@ -351,5 +415,8 @@
                 })
                 .ToListAsync();
         }
+
+        private static string? NormalizeOptionalText(string? input)
+            => string.IsNullOrWhiteSpace(input) ? null : input.Trim();
     }
 }
