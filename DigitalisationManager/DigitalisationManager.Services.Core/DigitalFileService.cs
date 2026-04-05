@@ -111,6 +111,9 @@
                     FileName = file.FileName
                 };
 
+                string? savedOriginalPath = null;
+                string? savedPreviewPath = null;
+
                 try
                 {
                     string? validationError = ValidateUploadFile(file);
@@ -145,11 +148,15 @@
                         normalizedExtension,
                         originalBuffer);
 
+                    savedOriginalPath = originalStorageResult.RelativePath;
+
                     await using MemoryStream previewBuffer = new MemoryStream(previewJpegBytes);
                     var previewStorageResult = await previewImageStorageService.SaveAsync(
                         item.FundId,
                         item.Id,
                         previewBuffer);
+
+                    savedPreviewPath = previewStorageResult.RelativePath;
 
                     DigitalFile digitalFile = new DigitalFile
                     {
@@ -177,6 +184,9 @@
                 }
                 catch (DbUpdateException)
                 {
+                    DeleteIfExists(savedOriginalPath, originalFileStorageService);
+                    DeleteIfExists(savedPreviewPath, previewImageStorageService);
+
                     fileResult.Success = false;
                     fileResult.Error = "Database error occurred while saving the file.";
                     batchResult.Results.Add(fileResult);
@@ -184,6 +194,9 @@
                 }
                 catch (Exception ex)
                 {
+                    DeleteIfExists(savedOriginalPath, originalFileStorageService);
+                    DeleteIfExists(savedPreviewPath, previewImageStorageService);
+
                     fileResult.Success = false;
                     fileResult.Error = $"Processing failed: {ex.Message}";
                     batchResult.Results.Add(fileResult);
@@ -231,12 +244,9 @@
             );
         }
 
-        public async Task<(byte[] Content, string ContentType, string DownloadName)?> DownloadPreviewAsync(int id)
+        public async Task<(byte[] Content, string ContentType, string DownloadName)?> DownloadPreviewAsync(int id, bool enforceUserAccess)
         {
-            DigitalFile? digitalFile = await context.DigitalFiles
-                .AsNoTracking()
-                .FirstOrDefaultAsync(df => df.Id == id);
-
+            DigitalFile? digitalFile = await GetAccessibleDigitalFileAsync(id, enforceUserAccess);
             if (digitalFile is null)
             {
                 return null;
@@ -260,12 +270,9 @@
             );
         }
 
-        public async Task<(byte[] Content, string ContentType)?> GetPreviewImageAsync(int id)
+        public async Task<(byte[] Content, string ContentType)?> GetPreviewImageAsync(int id, bool enforceUserAccess)
         {
-            DigitalFile? digitalFile = await context.DigitalFiles
-                .AsNoTracking()
-                .FirstOrDefaultAsync(df => df.Id == id);
-
+            DigitalFile? digitalFile = await GetAccessibleDigitalFileAsync(id, enforceUserAccess);
             if (digitalFile is null)
             {
                 return null;
@@ -288,21 +295,27 @@
 
         public async Task<DigitalFilePreviewViewModel?> GetPreviewPageAsync(
             int id,
+            bool enforceUserAccess,
             bool canDownloadOriginal,
-            bool canDownloadPreview)
+            bool canDownloadPreview,
+            string backToItemDetailsArea)
         {
-            DigitalFile? currentFile = await context.DigitalFiles
-                .AsNoTracking()
-                .FirstOrDefaultAsync(df => df.Id == id);
-
+            DigitalFile? currentFile = await GetAccessibleDigitalFileAsync(id, enforceUserAccess);
             if (currentFile is null)
             {
                 return null;
             }
 
-            List<DigitalFile> files = await context.DigitalFiles
+            IQueryable<DigitalFile> query = context.DigitalFiles
                 .AsNoTracking()
-                .Where(df => df.ItemId == currentFile.ItemId)
+                .Where(df => df.ItemId == currentFile.ItemId);
+
+            if (enforceUserAccess)
+            {
+                query = query.Where(df => df.IsDownloadAllowed);
+            }
+
+            List<DigitalFile> files = await query
                 .OrderBy(df => df.UploadedAt)
                 .ThenBy(df => df.Id)
                 .ToListAsync();
@@ -313,18 +326,23 @@
                 return null;
             }
 
+            string previewImageUrl = backToItemDetailsArea == "Admin"
+                ? $"/Admin/DigitalFiles/PreviewImage/{currentFile.Id}"
+                : $"/User/DigitalFiles/PreviewImage/{currentFile.Id}";
+
             return new DigitalFilePreviewViewModel
             {
                 Id = currentFile.Id,
                 ItemId = currentFile.ItemId,
                 OriginalFileName = currentFile.OriginalFileName,
-                PreviewImageUrl = string.Empty,
+                PreviewImageUrl = previewImageUrl,
                 Position = index + 1,
                 TotalCount = files.Count,
                 PreviousFileId = index > 0 ? files[index - 1].Id : null,
                 NextFileId = index < files.Count - 1 ? files[index + 1].Id : null,
                 CanDownloadOriginal = canDownloadOriginal,
-                CanDownloadPreview = canDownloadPreview
+                CanDownloadPreview = canDownloadPreview,
+                BackToItemDetailsArea = backToItemDetailsArea
             };
         }
 
@@ -370,6 +388,20 @@
             return (true, null);
         }
 
+        private async Task<DigitalFile?> GetAccessibleDigitalFileAsync(int id, bool enforceUserAccess)
+        {
+            IQueryable<DigitalFile> query = context.DigitalFiles
+                .AsNoTracking()
+                .Where(df => df.Id == id);
+
+            if (enforceUserAccess)
+            {
+                query = query.Where(df => df.IsDownloadAllowed);
+            }
+
+            return await query.FirstOrDefaultAsync();
+        }
+
         private string? ValidateUploadFile(IFormFile file)
         {
             if (file is null || file.Length == 0)
@@ -399,6 +431,22 @@
             byte[] hash = sha256.ComputeHash(stream);
 
             return Convert.ToHexString(hash).ToLowerInvariant();
+        }
+
+        private static void DeleteIfExists(string? relativePath, IOriginalFileStorageService storageService)
+        {
+            if (!string.IsNullOrWhiteSpace(relativePath) && storageService.Exists(relativePath))
+            {
+                storageService.Delete(relativePath);
+            }
+        }
+
+        private static void DeleteIfExists(string? relativePath, IPreviewImageStorageService storageService)
+        {
+            if (!string.IsNullOrWhiteSpace(relativePath) && storageService.Exists(relativePath))
+            {
+                storageService.Delete(relativePath);
+            }
         }
     }
 }

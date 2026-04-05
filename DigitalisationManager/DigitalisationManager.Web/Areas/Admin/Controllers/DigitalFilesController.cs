@@ -13,12 +13,6 @@
             this.digitalFileService = digitalFileService;
         }
 
-        [HttpGet]
-        public IActionResult Index()
-        {
-            return View();
-        }
-
         [HttpPost]
         public async Task<IActionResult> Upload(int itemId, List<IFormFile> files)
         {
@@ -51,9 +45,52 @@
         }
 
         [HttpGet]
-        public async Task<IActionResult> Download(int id)
+        public async Task<IActionResult> Preview(int id)
+        {
+            DigitalFilePreviewViewModel? model = await digitalFileService.GetPreviewPageAsync(
+                id,
+                enforceUserAccess: false,
+                canDownloadOriginal: true,
+                canDownloadPreview: true,
+                backToItemDetailsArea: "Admin");
+
+            if (model is null)
+            {
+                return NotFound();
+            }
+
+            return View(model);
+        }
+
+        [HttpGet]
+        [Route("/Admin/DigitalFiles/PreviewImage/{id:int}")]
+        public async Task<IActionResult> PreviewImage(int id)
+        {
+            var result = await digitalFileService.GetPreviewImageAsync(id, enforceUserAccess: false);
+            if (result is null)
+            {
+                return NotFound();
+            }
+
+            return File(result.Value.Content, result.Value.ContentType);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DownloadOriginal(int id)
         {
             var result = await digitalFileService.DownloadOriginalAsync(id);
+            if (result is null)
+            {
+                return NotFound();
+            }
+
+            return File(result.Value.Content, result.Value.ContentType, result.Value.DownloadName);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DownloadPreview(int id)
+        {
+            var result = await digitalFileService.DownloadPreviewAsync(id, enforceUserAccess: false);
             if (result is null)
             {
                 return NotFound();
@@ -74,8 +111,8 @@
             else
             {
                 TempData["Success"] = isAllowed
-                    ? "File download enabled for users."
-                    : "File download disabled for users.";
+                    ? "File access enabled for users."
+                    : "File access disabled for users.";
             }
 
             return RedirectToAction("Details", "Items", new { area = "Admin", id = itemId });

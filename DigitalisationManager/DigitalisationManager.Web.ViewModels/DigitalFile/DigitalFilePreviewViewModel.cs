@@ -21,5 +21,7 @@
         public bool CanDownloadOriginal { get; set; }
 
         public bool CanDownloadPreview { get; set; }
+
+        public string BackToItemDetailsArea { get; set; } = null!;
     }
 }

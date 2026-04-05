@@ -12,11 +12,16 @@
 
         Task<(byte[] Content, string ContentType, string DownloadName)?> DownloadOriginalAsync(int id);
 
-        Task<(byte[] Content, string ContentType, string DownloadName)?> DownloadPreviewAsync(int id);
+        Task<(byte[] Content, string ContentType, string DownloadName)?> DownloadPreviewAsync(int id, bool enforceUserAccess);
 
-        Task<(byte[] Content, string ContentType)?> GetPreviewImageAsync(int id);
+        Task<(byte[] Content, string ContentType)?> GetPreviewImageAsync(int id, bool enforceUserAccess);
 
-        Task<DigitalFilePreviewViewModel?> GetPreviewPageAsync(int id, bool canDownloadOriginal, bool canDownloadPreview);
+        Task<DigitalFilePreviewViewModel?> GetPreviewPageAsync(
+            int id,
+            bool enforceUserAccess,
+            bool canDownloadOriginal,
+            bool canDownloadPreview,
+            string backToItemDetailsArea);
 
         Task<(bool Success, string? Error)> DeleteAsync(int id);
 
