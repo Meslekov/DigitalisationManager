@@ -46,7 +46,10 @@ namespace DigitalisationManager.Web
             builder.Services.AddScoped<IFileStorageService, FileStorageService>();
             builder.Services.AddScoped<FileStorageOptions>();
             builder.Services.AddScoped<IDigitalFileService, DigitalFileService>();
-          
+            builder.Services.AddScoped<IOriginalFileStorageService, OriginalFileStorageService>();
+            builder.Services.AddScoped<IPreviewImageStorageService, PreviewImageStorageService>();
+            builder.Services.AddScoped<ITiffConversionService, TiffConversionService>();
+
             WebApplication app = builder.Build();
 
             // Configure the HTTP request pipeline.
