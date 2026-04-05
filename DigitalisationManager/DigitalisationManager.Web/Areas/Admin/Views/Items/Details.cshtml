@@ -195,9 +195,25 @@
                                     <a class="btn btn-sm btn-outline-secondary"
                                            asp-area="Admin"
                                            asp-controller="DigitalFiles"
-                                           asp-action="Download"
+                                           asp-action="Preview"
                                            asp-route-id="@file.Id">
-                                        Download
+                                        Preview
+                                    </a>
+
+                                    <a class="btn btn-sm btn-outline-secondary"
+                                           asp-area="Admin"
+                                           asp-controller="DigitalFiles"
+                                           asp-action="DownloadPreview"
+                                           asp-route-id="@file.Id">
+                                        Download JPG
+                                    </a>
+
+                                    <a class="btn btn-sm btn-outline-primary"
+                                           asp-area="Admin"
+                                           asp-controller="DigitalFiles"
+                                           asp-action="DownloadOriginal"
+                                           asp-route-id="@file.Id">
+                                        Download TIFF
                                     </a>
 
                                     <form asp-area="Admin"

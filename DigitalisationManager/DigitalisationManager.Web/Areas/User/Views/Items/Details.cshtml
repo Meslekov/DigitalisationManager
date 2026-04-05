@@ -125,13 +125,23 @@
                             <td class="text-end">
                                 @if (file.IsDownloadAllowed)
                                 {
-                                    <a class="btn btn-sm btn-outline-primary"
-                                           asp-area="User"
-                                           asp-controller="DigitalFiles"
-                                           asp-action="Download"
-                                           asp-route-id="@file.Id">
-                                        Download
-                                    </a>
+                                    <div class="d-inline-flex gap-2 flex-wrap justify-content-end">
+                                        <a class="btn btn-sm btn-outline-secondary"
+                                               asp-area="User"
+                                               asp-controller="DigitalFiles"
+                                               asp-action="Preview"
+                                               asp-route-id="@file.Id">
+                                            Preview
+                                        </a>
+
+                                        <a class="btn btn-sm btn-outline-primary"
+                                               asp-area="User"
+                                               asp-controller="DigitalFiles"
+                                               asp-action="Download"
+                                               asp-route-id="@file.Id">
+                                            Download JPG
+                                        </a>
+                                    </div>
                                 }
                                 else
                                 {
