@@ -5,6 +5,7 @@ namespace DigitalisationManager.Web
     using DigitalisationManager.Services.Core;
     using DigitalisationManager.Services.Core.Contracts;
     using DigitalisationManager.Services.Core.Options;
+    using DigitalisationManager.Web.Extensions;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
@@ -32,7 +33,7 @@ namespace DigitalisationManager.Web
             builder.Services.ConfigureApplicationCookie(options =>
             {
                 options.LoginPath = "/Identity/Account/Login";
-                options.AccessDeniedPath = "/Home/AccessDenied";
+                options.AccessDeniedPath = "/Error/403";
             });
 
             builder.Services.AddControllersWithViews(options =>
@@ -59,10 +60,10 @@ namespace DigitalisationManager.Web
             }
             else
             {
-                app.UseExceptionHandler("/Error/500");
                 app.UseHsts();
             }
 
+            app.UseGlobalExceptionHandling();
             app.UseStatusCodePagesWithReExecute("/Error/{0}");
 
             app.UseHttpsRedirection();
