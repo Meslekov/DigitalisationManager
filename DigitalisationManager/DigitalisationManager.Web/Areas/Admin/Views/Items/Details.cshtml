@@ -13,6 +13,10 @@
 {
     <div class="alert alert-success">@ok</div>
 }
+@if (TempData["Warning"] is string warning)
+{
+    <div class="alert alert-warning">@warning</div>
+}
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <div>
@@ -138,11 +142,12 @@
                value="@Model.Id" />
 
         <div class="mb-2">
-            <label class="form-label">Upload TIFF (.tif/.tiff)</label>
+            <label class="form-label">Upload TIFF files (.tif/.tiff)</label>
 
             <input class="form-control"
                    type="file"
-                   name="file"
+                   name="files"
+                   multiple
                    accept=".tif,.tiff,image/tiff" />
         </div>
 
