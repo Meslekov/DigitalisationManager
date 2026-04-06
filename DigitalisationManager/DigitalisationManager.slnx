@@ -9,6 +9,9 @@
   <Folder Name="/Solution Items/">
     <File Path=".gitignore" />
   </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="DigitalisationManager.Tests/DigitalisationManager.Tests.csproj" Id="7d801a5c-6543-45e3-b95b-835a1652b323" />
+  </Folder>
   <Folder Name="/Web/">
     <Project Path="DigitalisationManager.Web.ViewModels/DigitalisationManager.Web.ViewModels.csproj" />
     <Project Path="DigitalisationManager.Web/DigitalisationManager.Web.csproj" />
