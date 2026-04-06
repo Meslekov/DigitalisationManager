@@ -507,4 +507,442 @@ public class ItemServiceTests
         Assert.That(historyCount, Is.EqualTo(1));
         Assert.That(fileCount, Is.EqualTo(1));
     }
+    [Test]
+    public async Task GetIndexAsync_ShouldReturnAllItems_WhenNoFiltersAreApplied()
+    {
+        _context.Items.AddRange(
+            new Item
+            {
+                Id = 100,
+                FundId = 1,
+                CategoryId = 1,
+                InventoryNumber = "INV-A1",
+                Description = "Letter from Sofia",
+                DocumentDateText = "1920",
+                Status = ItemStatus.New,
+                CreatedAt = DateTime.UtcNow.AddMinutes(-3)
+            },
+            new Item
+            {
+                Id = 101,
+                FundId = 1,
+                CategoryId = 3,
+                InventoryNumber = "INV-A2",
+                Description = "Photo album",
+                DocumentDateText = "1921",
+                Status = ItemStatus.New,
+                CreatedAt = DateTime.UtcNow.AddMinutes(-2)
+            },
+            new Item
+            {
+                Id = 102,
+                FundId = 2,
+                CategoryId = 3,
+                InventoryNumber = "INV-B1",
+                Description = "Photo from Plovdiv",
+                DocumentDateText = "1922",
+                Status = ItemStatus.New,
+                CreatedAt = DateTime.UtcNow.AddMinutes(-1)
+            });
+
+        await _context.SaveChangesAsync();
+
+        var result = await _service.GetIndexAsync(fundId: null, q: null, page: 1, pageSize: 10);
+
+        Assert.That(result.FundId, Is.Null);
+        Assert.That(result.Q, Is.Null);
+        Assert.That(result.Results.TotalCount, Is.EqualTo(3));
+        Assert.That(result.Results.Items.Count, Is.EqualTo(3));
+    }
+
+    [Test]
+    public async Task GetIndexAsync_ShouldFilterByFund()
+    {
+        _context.Items.AddRange(
+            new Item
+            {
+                Id = 110,
+                FundId = 1,
+                CategoryId = 1,
+                InventoryNumber = "INV-F1",
+                Description = "Fund one item",
+                DocumentDateText = "1930",
+                Status = ItemStatus.New,
+                CreatedAt = DateTime.UtcNow.AddMinutes(-2)
+            },
+            new Item
+            {
+                Id = 111,
+                FundId = 2,
+                CategoryId = 1,
+                InventoryNumber = "INV-F2",
+                Description = "Fund two item",
+                DocumentDateText = "1931",
+                Status = ItemStatus.New,
+                CreatedAt = DateTime.UtcNow.AddMinutes(-1)
+            });
+
+        await _context.SaveChangesAsync();
+
+        var result = await _service.GetIndexAsync(fundId: 1, q: null, page: 1, pageSize: 10);
+
+        Assert.That(result.FundId, Is.EqualTo(1));
+        Assert.That(result.Results.TotalCount, Is.EqualTo(1));
+        Assert.That(result.Results.Items.Count, Is.EqualTo(1));
+        Assert.That(result.Results.Items[0].FundId, Is.EqualTo(1));
+        Assert.That(result.Results.Items[0].InventoryNumber, Is.EqualTo("INV-F1"));
+    }
+
+    [Test]
+    public async Task GetIndexAsync_ShouldTrimSearchText()
+    {
+        _context.Items.AddRange(
+            new Item
+            {
+                Id = 120,
+                FundId = 1,
+                CategoryId = 1,
+                InventoryNumber = "PHOTO-001",
+                Description = "Large TIFF image",
+                DocumentDateText = "1940",
+                Status = ItemStatus.New,
+                CreatedAt = DateTime.UtcNow.AddMinutes(-2)
+            },
+            new Item
+            {
+                Id = 121,
+                FundId = 1,
+                CategoryId = 1,
+                InventoryNumber = "LEDGER-001",
+                Description = "Administrative ledger",
+                DocumentDateText = "1941",
+                Status = ItemStatus.New,
+                CreatedAt = DateTime.UtcNow.AddMinutes(-1)
+            });
+
+        await _context.SaveChangesAsync();
+
+        var result = await _service.GetIndexAsync(fundId: null, q: "  PHOTO-001  ", page: 1, pageSize: 10);
+
+        Assert.That(result.Q, Is.EqualTo("PHOTO-001"));
+        Assert.That(result.Results.TotalCount, Is.EqualTo(1));
+        Assert.That(result.Results.Items.Count, Is.EqualTo(1));
+        Assert.That(result.Results.Items[0].InventoryNumber, Is.EqualTo("PHOTO-001"));
+    }
+
+    [Test]
+    public async Task GetIndexAsync_ShouldFilterByInventoryNumber()
+    {
+        _context.Items.AddRange(
+            new Item
+            {
+                Id = 130,
+                FundId = 1,
+                CategoryId = 1,
+                InventoryNumber = "PHOTO-INV-1",
+                Description = "First description",
+                DocumentDateText = "1950",
+                Status = ItemStatus.New,
+                CreatedAt = DateTime.UtcNow.AddMinutes(-2)
+            },
+            new Item
+            {
+                Id = 131,
+                FundId = 1,
+                CategoryId = 1,
+                InventoryNumber = "LEDGER-INV-1",
+                Description = "Second description",
+                DocumentDateText = "1951",
+                Status = ItemStatus.New,
+                CreatedAt = DateTime.UtcNow.AddMinutes(-1)
+            });
+
+        await _context.SaveChangesAsync();
+
+        var result = await _service.GetIndexAsync(fundId: null, q: "PHOTO-INV", page: 1, pageSize: 10);
+
+        Assert.That(result.Results.TotalCount, Is.EqualTo(1));
+        Assert.That(result.Results.Items.Count, Is.EqualTo(1));
+        Assert.That(result.Results.Items[0].InventoryNumber, Is.EqualTo("PHOTO-INV-1"));
+    }
+
+    [Test]
+    public async Task GetIndexAsync_ShouldFilterByDescription()
+    {
+        _context.Items.AddRange(
+            new Item
+            {
+                Id = 140,
+                FundId = 1,
+                CategoryId = 1,
+                InventoryNumber = "INV-D1",
+                Description = "UniqueDescriptionMarker",
+                DocumentDateText = "1960",
+                Status = ItemStatus.New,
+                CreatedAt = DateTime.UtcNow.AddMinutes(-2)
+            },
+            new Item
+            {
+                Id = 141,
+                FundId = 1,
+                CategoryId = 1,
+                InventoryNumber = "INV-D2",
+                Description = "Other text",
+                DocumentDateText = "1961",
+                Status = ItemStatus.New,
+                CreatedAt = DateTime.UtcNow.AddMinutes(-1)
+            });
+
+        await _context.SaveChangesAsync();
+
+        var result = await _service.GetIndexAsync(fundId: null, q: "UniqueDescriptionMarker", page: 1, pageSize: 10);
+
+        Assert.That(result.Results.TotalCount, Is.EqualTo(1));
+        Assert.That(result.Results.Items.Count, Is.EqualTo(1));
+        Assert.That(result.Results.Items[0].InventoryNumber, Is.EqualTo("INV-D1"));
+    }
+
+    [Test]
+    public async Task GetIndexAsync_ShouldFilterByDocumentDateText()
+    {
+        _context.Items.AddRange(
+            new Item
+            {
+                Id = 150,
+                FundId = 1,
+                CategoryId = 1,
+                InventoryNumber = "INV-T1",
+                Description = "Date text item",
+                DocumentDateText = "SpecialDateMarker-1879",
+                Status = ItemStatus.New,
+                CreatedAt = DateTime.UtcNow.AddMinutes(-2)
+            },
+            new Item
+            {
+                Id = 151,
+                FundId = 1,
+                CategoryId = 1,
+                InventoryNumber = "INV-T2",
+                Description = "Other date text item",
+                DocumentDateText = "1880",
+                Status = ItemStatus.New,
+                CreatedAt = DateTime.UtcNow.AddMinutes(-1)
+            });
+
+        await _context.SaveChangesAsync();
+
+        var result = await _service.GetIndexAsync(fundId: null, q: "SpecialDateMarker", page: 1, pageSize: 10);
+
+        Assert.That(result.Results.TotalCount, Is.EqualTo(1));
+        Assert.That(result.Results.Items.Count, Is.EqualTo(1));
+        Assert.That(result.Results.Items[0].InventoryNumber, Is.EqualTo("INV-T1"));
+    }
+
+    [Test]
+    public async Task GetIndexAsync_ShouldFilterByCategoryName()
+    {
+        _context.Items.AddRange(
+            new Item
+            {
+                Id = 160,
+                FundId = 1,
+                CategoryId = 3,
+                InventoryNumber = "INV-CAT-1",
+                Description = "Category search item",
+                DocumentDateText = "1970",
+                Status = ItemStatus.New,
+                CreatedAt = DateTime.UtcNow.AddMinutes(-2)
+            },
+            new Item
+            {
+                Id = 161,
+                FundId = 1,
+                CategoryId = 1,
+                InventoryNumber = "INV-CAT-2",
+                Description = "Other category item",
+                DocumentDateText = "1971",
+                Status = ItemStatus.New,
+                CreatedAt = DateTime.UtcNow.AddMinutes(-1)
+            });
+
+        await _context.SaveChangesAsync();
+
+        var result = await _service.GetIndexAsync(fundId: null, q: "Correspondence", page: 1, pageSize: 10);
+
+        Assert.That(result.Results.TotalCount, Is.EqualTo(1));
+        Assert.That(result.Results.Items.Count, Is.EqualTo(1));
+        Assert.That(result.Results.Items[0].CategoryName, Is.EqualTo("Correspondence"));
+    }
+
+    [Test]
+    public async Task GetIndexAsync_ShouldApplyFundAndSearchTogether()
+    {
+        _context.Items.AddRange(
+            new Item
+            {
+                Id = 170,
+                FundId = 1,
+                CategoryId = 1,
+                InventoryNumber = "PHOTO-F1",
+                Description = "Photo in fund one",
+                DocumentDateText = "1980",
+                Status = ItemStatus.New,
+                CreatedAt = DateTime.UtcNow.AddMinutes(-3)
+            },
+            new Item
+            {
+                Id = 171,
+                FundId = 1,
+                CategoryId = 1,
+                InventoryNumber = "LEDGER-F1",
+                Description = "Ledger in fund one",
+                DocumentDateText = "1981",
+                Status = ItemStatus.New,
+                CreatedAt = DateTime.UtcNow.AddMinutes(-2)
+            },
+            new Item
+            {
+                Id = 172,
+                FundId = 2,
+                CategoryId = 1,
+                InventoryNumber = "PHOTO-F2",
+                Description = "Photo in fund two",
+                DocumentDateText = "1982",
+                Status = ItemStatus.New,
+                CreatedAt = DateTime.UtcNow.AddMinutes(-1)
+            });
+
+        await _context.SaveChangesAsync();
+
+        var result = await _service.GetIndexAsync(fundId: 1, q: "PHOTO", page: 1, pageSize: 10);
+
+        Assert.That(result.FundId, Is.EqualTo(1));
+        Assert.That(result.Q, Is.EqualTo("PHOTO"));
+        Assert.That(result.Results.TotalCount, Is.EqualTo(1));
+        Assert.That(result.Results.Items.Count, Is.EqualTo(1));
+        Assert.That(result.Results.Items[0].InventoryNumber, Is.EqualTo("PHOTO-F1"));
+    }
+
+    [Test]
+    public async Task GetIndexAsync_ShouldNormalizeInvalidPagingValues()
+    {
+        _context.Items.AddRange(
+            new Item
+            {
+                Id = 180,
+                FundId = 1,
+                CategoryId = 1,
+                InventoryNumber = "INV-P1",
+                Description = "Paging test one",
+                DocumentDateText = "1990",
+                Status = ItemStatus.New,
+                CreatedAt = DateTime.UtcNow.AddMinutes(-2)
+            },
+            new Item
+            {
+                Id = 181,
+                FundId = 1,
+                CategoryId = 1,
+                InventoryNumber = "INV-P2",
+                Description = "Paging test two",
+                DocumentDateText = "1991",
+                Status = ItemStatus.New,
+                CreatedAt = DateTime.UtcNow.AddMinutes(-1)
+            });
+
+        await _context.SaveChangesAsync();
+
+        var result = await _service.GetIndexAsync(fundId: null, q: null, page: 0, pageSize: 0);
+
+        Assert.That(result.Results.Page, Is.EqualTo(1));
+        Assert.That(result.Results.PageSize, Is.GreaterThan(0));
+    }
+
+    [Test]
+    public async Task GetIndexAsync_ShouldClampPageToTotalPages_WhenRequestedPageIsTooLarge()
+    {
+        for (int i = 1; i <= 3; i++)
+        {
+            _context.Items.Add(new Item
+            {
+                Id = 190 + i,
+                FundId = 1,
+                CategoryId = 1,
+                InventoryNumber = $"INV-CLAMP-{i}",
+                Description = $"Clamp item {i}",
+                DocumentDateText = $"200{i}",
+                Status = ItemStatus.New,
+                CreatedAt = DateTime.UtcNow.AddMinutes(-i)
+            });
+        }
+
+        await _context.SaveChangesAsync();
+
+        var result = await _service.GetIndexAsync(fundId: null, q: null, page: 99, pageSize: 2);
+
+        Assert.That(result.Results.TotalCount, Is.EqualTo(3));
+        Assert.That(result.Results.TotalPages, Is.EqualTo(2));
+        Assert.That(result.Results.Page, Is.EqualTo(2));
+        Assert.That(result.Results.Items.Count, Is.EqualTo(1));
+    }
+
+    [Test]
+    public async Task GetIndexAsync_ShouldReturnNewestItemsFirst()
+    {
+        _context.Items.AddRange(
+            new Item
+            {
+                Id = 210,
+                FundId = 1,
+                CategoryId = 1,
+                InventoryNumber = "INV-OLD",
+                Description = "Old item",
+                DocumentDateText = "2010",
+                Status = ItemStatus.New,
+                CreatedAt = DateTime.UtcNow.AddMinutes(-10)
+            },
+            new Item
+            {
+                Id = 211,
+                FundId = 1,
+                CategoryId = 1,
+                InventoryNumber = "INV-NEW",
+                Description = "New item",
+                DocumentDateText = "2011",
+                Status = ItemStatus.New,
+                CreatedAt = DateTime.UtcNow.AddMinutes(-1)
+            });
+
+        await _context.SaveChangesAsync();
+
+        var result = await _service.GetIndexAsync(fundId: null, q: null, page: 1, pageSize: 10);
+
+        Assert.That(result.Results.Items.Count, Is.EqualTo(2));
+        Assert.That(result.Results.Items[0].InventoryNumber, Is.EqualTo("INV-NEW"));
+        Assert.That(result.Results.Items[1].InventoryNumber, Is.EqualTo("INV-OLD"));
+    }
+
+    [Test]
+    public async Task GetIndexAsync_ShouldReturnEmptyCollection_WhenNoItemsMatch()
+    {
+        _context.Items.Add(new Item
+        {
+            Id = 220,
+            FundId = 1,
+            CategoryId = 1,
+            InventoryNumber = "INV-NOMATCH",
+            Description = "Administrative record",
+            DocumentDateText = "2020",
+            Status = ItemStatus.New,
+            CreatedAt = DateTime.UtcNow
+        });
+
+        await _context.SaveChangesAsync();
+
+        var result = await _service.GetIndexAsync(fundId: 2, q: "photo", page: 1, pageSize: 10);
+
+        Assert.That(result.Results.TotalCount, Is.EqualTo(0));
+        Assert.That(result.Results.TotalPages, Is.EqualTo(0));
+        Assert.That(result.Results.Items, Is.Empty);
+    }
 }
