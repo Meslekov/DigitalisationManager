@@ -25,6 +25,8 @@ public class ItemServiceTests
         await _context.DisposeAsync();
     }
 
+    #region CreateAsync tests
+
     [Test]
     public async Task CreateAsync_ShouldCreateItem_WhenModelIsValid()
     {
@@ -166,6 +168,10 @@ public class ItemServiceTests
         Assert.That(item!.FundId, Is.EqualTo(2));
         Assert.That(item.InventoryNumber, Is.EqualTo("INV-3001"));
     }
+
+    #endregion
+
+    #region UpdateAsync tests
 
     [Test]
     public async Task UpdateAsync_ShouldReturnFailure_WhenItemIdIsNull()
@@ -390,6 +396,10 @@ public class ItemServiceTests
         Assert.That(updatedItem.DocumentDateText, Is.EqualTo("1941"));
     }
 
+    #endregion
+
+    #region DeleteAsync tests
+
     [Test]
     public async Task DeleteAsync_ShouldReturnFailure_WhenItemDoesNotExist()
     {
@@ -507,6 +517,11 @@ public class ItemServiceTests
         Assert.That(historyCount, Is.EqualTo(1));
         Assert.That(fileCount, Is.EqualTo(1));
     }
+
+    #endregion
+
+    #region GetIndexAsync tests
+
     [Test]
     public async Task GetIndexAsync_ShouldReturnAllItems_WhenNoFiltersAreApplied()
     {
@@ -945,4 +960,6 @@ public class ItemServiceTests
         Assert.That(result.Results.TotalPages, Is.EqualTo(0));
         Assert.That(result.Results.Items, Is.Empty);
     }
+
+    #endregion
 }

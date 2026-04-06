@@ -45,6 +45,8 @@ public class DigitalFileServiceTests
         await _context.DisposeAsync();
     }
 
+    #region UploadAsync validation tests
+
     [Test]
     public async Task UploadAsync_ShouldReturnFailure_WhenItemDoesNotExist()
     {
@@ -480,6 +482,10 @@ public class DigitalFileServiceTests
         Assert.That(updatedItem.Status, Is.EqualTo(ItemStatus.Digitized));
     }
 
+#endregion
+
+    #region UploadAsync success tests
+
     [Test]
     public async Task UploadAsync_ShouldUseExactOriginalFileNameInDatabase_WhenUploadSucceeds()
     {
@@ -500,6 +506,10 @@ public class DigitalFileServiceTests
         Assert.That(result.SuccessCount, Is.EqualTo(1));
         Assert.That(saved.OriginalFileName, Is.EqualTo("My Scan Final.TIF"));
     }
+
+#endregion
+
+    #region Download/Preview tests
 
     [Test]
     public async Task DownloadOriginalAsync_ShouldReturnNull_WhenFileDoesNotExistInDatabase()
@@ -941,6 +951,10 @@ public class DigitalFileServiceTests
         Assert.That(result.PreviewImageUrl, Is.EqualTo($"/User/DigitalFiles/PreviewImage/{visible1.Id}"));
     }
 
+    #endregion
+
+    #region Permission tests
+
     [Test]
     public async Task SetDownloadAllowedAsync_ShouldReturnFailure_WhenFileDoesNotExist()
     {
@@ -983,6 +997,10 @@ public class DigitalFileServiceTests
         Assert.That(result.Error, Is.Null);
         Assert.That(updated.IsDownloadAllowed, Is.True);
     }
+
+    #endregion
+
+    #region DeleteAsync tests
 
     [Test]
     public async Task DeleteAsync_ShouldReturnFailure_WhenFileDoesNotExist()
@@ -1073,4 +1091,6 @@ public class DigitalFileServiceTests
         Assert.That(result.Error, Is.Null);
         Assert.That(existsInDb, Is.False);
     }
+
+    #endregion
 }
