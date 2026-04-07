@@ -2,50 +2,56 @@
     ViewData["Title"] = "User Home";
 }
 
-<div class="py-5 text-center">
-    <div class="mx-auto" style="max-width: 760px;">
-        <h1 class="display-5 fw-semibold mb-3">Welcome</h1>
-        <p class="lead text-muted mb-3">
-            Explore archival collections and discover digitised materials in a clear and easy-to-use environment.
-        </p>
-        <p class="text-muted mb-0">
-            You can browse available funds, review archival items, and access related digital files through the sections below.
-        </p>
-    </div>
+<div class="user-page-header mb-4">
+    <h1 class="mb-1">User Area</h1>
+    <p class="text-muted mb-0">
+        Browse archival items, open details, and view available preview files.
+    </p>
 </div>
 
-<div class="row mt-4 g-4 justify-content-center">
-    <div class="col-md-6 col-lg-5">
-        <div class="card shadow-sm border-0 h-100">
+<div class="row g-4">
+
+    <div class="col-md-8">
+        <div class="card shadow-sm h-100 user-card">
             <div class="card-body p-4">
-                <h2 class="h5 mb-3">Funds</h2>
+                <div class="user-card-eyebrow">Archive Access</div>
+                <h2 class="h4 mb-2">Browse Items</h2>
                 <p class="text-muted mb-4">
-                    Browse archival funds and explore the collections available in the system.
+                    Explore archived items, open details pages, and preview digitized files where access is allowed.
                 </p>
-                <a asp-area="User"
-                       asp-controller="Funds"
-                       asp-action="Index"
-                       class="btn btn-primary px-4">
-                    Browse Funds
-                </a>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <a asp-area="User"
+                           asp-controller="Items"
+                           asp-action="Index"
+                           class="btn btn-primary">
+                        Open Items
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="col-md-6 col-lg-5">
-        <div class="card shadow-sm border-0 h-100">
+    <div class="col-md-4">
+        <div class="card shadow-sm h-100 user-card">
             <div class="card-body p-4">
-                <h2 class="h5 mb-3">Items</h2>
-                <p class="text-muted mb-4">
-                    Review archival items and open the digital materials connected to them.
-                </p>
-                <a asp-area="User"
-                       asp-controller="Items"
-                       asp-action="Index"
-                       class="btn btn-primary px-4">
-                    Browse Items
-                </a>
+                <h2 class="h6 text-uppercase text-muted mb-3">Access Notes</h2>
+
+                <div class="mb-3">
+                    <div class="fw-semibold">Preview Access</div>
+                    <div class="text-muted small">
+                        Preview images are available for digitized files that are visible in the system.
+                    </div>
+                </div>
+
+                <div>
+                    <div class="fw-semibold">Download Access</div>
+                    <div class="text-muted small">
+                        Original and preview downloads depend on permissions set by managers or administrators.
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
 </div>

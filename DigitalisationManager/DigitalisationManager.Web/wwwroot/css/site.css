@@ -79,3 +79,83 @@ body {
     color: #4338ca;
     font-weight: 600;
 }
+
+.manager-shell {
+    background-color: #f4f6fb;
+    min-height: 100vh;
+}
+
+.manager-navbar {
+    background-color: #ffffff;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+.manager-navbar .nav-link {
+        color: #374151;
+        font-weight: 500;
+    }
+
+.manager-navbar .nav-link:hover {
+            color: #111827;
+        }
+
+.manager-main {
+    min-height: calc(100vh - 140px);
+}
+
+.manager-footer {
+    background-color: #ffffff;
+}
+
+.manager-page-header h1 {
+    font-weight: 700;
+}
+
+.manager-card {
+    border-radius: 1rem;
+}
+
+.user-shell {
+    background-color: #f9fafb;
+    min-height: 100vh;
+}
+
+.user-navbar {
+    background-color: #ffffff;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.user-navbar .nav-link {
+        color: #374151;
+        font-weight: 500;
+    }
+
+.user-navbar .nav-link:hover,
+        .user-navbar .nav-link:focus {
+            color: #111827;
+        }
+
+.user-main {
+    min-height: calc(100vh - 140px);
+}
+
+.user-footer {
+    background-color: #ffffff;
+}
+
+.user-page-header h1 {
+    font-weight: 700;
+}
+
+.user-card {
+    border-radius: 1rem;
+}
+
+.user-card-eyebrow {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+}
