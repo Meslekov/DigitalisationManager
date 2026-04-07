@@ -10,5 +10,12 @@
             public const int MaxPageSize = 100;
             public const int DefaultFilesPageSize = 20;
         }
+
+        public static class RoleNames
+        {
+            public const string User = "User";
+            public const string Manager = "Manager";
+            public const string Administrator = "Administrator";
+        }
     }
 }
