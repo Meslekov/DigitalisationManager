@@ -2,13 +2,13 @@
 
 namespace DigitalisationManager.Web.Areas.Identity.Pages.Account
 {
-    using System.ComponentModel.DataAnnotations;
-
     using DigitalisationManager.Data.Models.Identity;
+    using static DigitalisationManager.GCommon.ApplicationConstants;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.RazorPages;
+    using System.ComponentModel.DataAnnotations;
     using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
     public class LoginModel : PageModel
@@ -79,9 +79,16 @@ namespace DigitalisationManager.Web.Areas.Identity.Pages.Account
                 {
                     ApplicationUser? user = await userManager.FindByEmailAsync(Input.Email);
 
-                    if (user is not null && await userManager.IsInRoleAsync(user, "Administrator"))
-                    {
+                    if(user is not null &&
+                        await userManager.IsInRoleAsync(user, RoleNames.Administrator))
+{
                         return LocalRedirect(Url.Content("~/Admin/Home/Index"));
+                    }
+
+                    if (user is not null &&
+                        await userManager.IsInRoleAsync(user, RoleNames.Manager))
+                    {
+                        return LocalRedirect(Url.Content("~/Manager/Home/Index"));
                     }
 
                     if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))

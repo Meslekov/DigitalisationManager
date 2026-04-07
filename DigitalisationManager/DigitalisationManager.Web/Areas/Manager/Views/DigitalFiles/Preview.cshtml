@@ -14,7 +14,7 @@
 
     <div class="d-flex gap-2 flex-wrap">
         <a class="btn btn-outline-secondary"
-               asp-area="Admin"
+               asp-area="Manager"
                asp-controller="Items"
                asp-action="Details"
                asp-route-id="@Model.ItemId">
@@ -22,7 +22,7 @@
         </a>
 
         <a class="btn btn-outline-primary"
-               asp-area="Admin"
+               asp-area="Manager"
                asp-controller="DigitalFiles"
                asp-action="DownloadPreview"
                asp-route-id="@Model.Id">
@@ -30,7 +30,7 @@
         </a>
 
         <a class="btn btn-primary"
-               asp-area="Admin"
+               asp-area="Manager"
                asp-controller="DigitalFiles"
                asp-action="DownloadOriginal"
                asp-route-id="@Model.Id">
@@ -52,7 +52,7 @@
         @if (Model.PreviousFileId.HasValue)
         {
             <a class="btn btn-outline-secondary"
-                   asp-area="Admin"
+                   asp-area="Manager"
                    asp-controller="DigitalFiles"
                    asp-action="Preview"
                    asp-route-id="@Model.PreviousFileId">
@@ -65,7 +65,7 @@
         @if (Model.NextFileId.HasValue)
         {
             <a class="btn btn-outline-secondary"
-                   asp-area="Admin"
+                   asp-area="Manager"
                    asp-controller="DigitalFiles"
                    asp-action="Preview"
                    asp-route-id="@Model.NextFileId">

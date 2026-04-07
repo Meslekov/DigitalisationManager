@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-
-namespace DigitalisationManager.Web.Areas.User.Controllers
+﻿namespace DigitalisationManager.Web.Areas.User.Controllers
 {
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+
+    using static DigitalisationManager.GCommon.ApplicationConstants;
+
     [Area("User")]
-    [Authorize(Roles = "User")]
+    [Authorize(Roles = $"{RoleNames.User}, {RoleNames.Administrator}, {RoleNames.Manager}")]
     public class UserBaseController : Controller
     {
     }

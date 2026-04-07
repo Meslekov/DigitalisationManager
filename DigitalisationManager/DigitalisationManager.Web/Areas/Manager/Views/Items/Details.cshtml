@@ -26,21 +26,21 @@
 
     <div class="d-flex gap-2">
         <a class="btn btn-outline-secondary"
-               asp-area="Admin"
+               asp-area="Manager"
                asp-action="Edit"
                asp-route-id="@Model.Id">
             Edit
         </a>
 
         <a class="btn btn-outline-danger"
-               asp-area="Admin"
+               asp-area="Manager"
                asp-action="Delete"
                asp-route-id="@Model.Id">
             Delete
         </a>
 
         <a class="btn btn-outline-secondary"
-               asp-area="Admin"
+               asp-area="Manager"
                asp-action="Index">
             Back
         </a>
@@ -131,7 +131,7 @@
 <div class="mt-4">
     <h2 class="h5">TIFF files</h2>
 
-    <form asp-area="Admin"
+    <form asp-area="Manager"
           asp-controller="DigitalFiles"
           asp-action="Upload"
           method="post"
@@ -193,7 +193,7 @@
                             <td class="text-end">
                                 <div class="d-inline-flex gap-2 flex-wrap justify-content-end">
                                     <a class="btn btn-sm btn-outline-secondary"
-                                           asp-area="Admin"
+                                           asp-area="Manager"
                                            asp-controller="DigitalFiles"
                                            asp-action="Preview"
                                            asp-route-id="@file.Id">
@@ -201,7 +201,7 @@
                                     </a>
 
                                     <a class="btn btn-sm btn-outline-secondary"
-                                           asp-area="Admin"
+                                           asp-area="Manager"
                                            asp-controller="DigitalFiles"
                                            asp-action="DownloadPreview"
                                            asp-route-id="@file.Id">
@@ -209,14 +209,14 @@
                                     </a>
 
                                     <a class="btn btn-sm btn-outline-primary"
-                                           asp-area="Admin"
+                                           asp-area="Manager"
                                            asp-controller="DigitalFiles"
                                            asp-action="DownloadOriginal"
                                            asp-route-id="@file.Id">
                                         Download TIFF
                                     </a>
 
-                                    <form asp-area="Admin"
+                                    <form asp-area="Manager"
                                           asp-controller="DigitalFiles"
                                           asp-action="SetDownloadAllowed"
                                           method="post"
@@ -283,7 +283,7 @@
                 </button>
 
                 <form id="deleteFileForm"
-                      asp-area="Admin"
+                      asp-area="Manager"
                       asp-controller="DigitalFiles"
                       asp-action="Delete"
                       method="post"

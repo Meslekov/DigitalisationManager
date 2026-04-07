@@ -326,9 +326,9 @@
                 return null;
             }
 
-            string previewImageUrl = backToItemDetailsArea == "Admin"
-                ? $"/Admin/DigitalFiles/PreviewImage/{currentFile.Id}"
-                : $"/User/DigitalFiles/PreviewImage/{currentFile.Id}";
+            string previewImageUrl = backToItemDetailsArea == "Manager"
+                   ? $"/Manager/DigitalFiles/PreviewImage/{currentFile.Id}"
+                   : $"/User/DigitalFiles/PreviewImage/{currentFile.Id}";
 
             return new DigitalFilePreviewViewModel
             {

@@ -1,0 +1,39 @@
+﻿@model DigitalisationManager.Web.ViewModels.Admin.UserRoleManagementViewModel
+
+@{
+    ViewData["Title"] = "Edit Role";
+}
+
+<div class="container mt-4">
+    <h1 class="mb-3">Edit Role</h1>
+
+    <div class="card">
+        <div class="card-body">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <form method="post">
+                <input asp-for="UserId" type="hidden" />
+                <input asp-for="Email" type="hidden" />
+                <input asp-for="FirstName" type="hidden" />
+                <input asp-for="LastName" type="hidden" />
+
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input class="form-control" value="@Model.Email" disabled />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="SelectedRole" class="form-label">Role</label>
+                    <select asp-for="SelectedRole"
+                            asp-items="@(new SelectList(Model.AvailableRoles))"
+                            class="form-select"></select>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <a asp-area="Admin" asp-controller="Users" asp-action="Index" class="btn btn-outline-secondary">Back</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

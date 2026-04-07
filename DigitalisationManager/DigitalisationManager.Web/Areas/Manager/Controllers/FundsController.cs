@@ -1,4 +1,4 @@
-﻿namespace DigitalisationManager.Web.Areas.Admin.Controllers
+﻿namespace DigitalisationManager.Web.Areas.Manager.Controllers
 {
     using Microsoft.AspNetCore.Mvc;
 
@@ -6,7 +6,7 @@
    
     using DigitalisationManager.Web.ViewModels.Funds;
   
-    public class FundsController : AdminBaseController
+    public class FundsController : ManagerBaseController
     {
         private readonly IFundService fundService;
 

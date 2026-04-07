@@ -29,3 +29,53 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+.admin-shell {
+    background-color: #f8f9fc;
+    min-height: 100vh;
+}
+
+.admin-navbar {
+    background: linear-gradient(135deg, #1f2937, #111827);
+}
+
+    .admin-navbar .navbar-brand,
+    .admin-navbar .nav-link {
+        color: rgba(255, 255, 255, 0.92) !important;
+    }
+
+        .admin-navbar .nav-link:hover,
+        .admin-navbar .nav-link:focus {
+            color: #ffffff !important;
+        }
+
+.admin-main {
+    min-height: calc(100vh - 140px);
+}
+
+.admin-footer {
+    background-color: #ffffff;
+}
+
+.admin-page-header h1 {
+    font-weight: 700;
+}
+
+.admin-dashboard-card {
+    border-radius: 1rem;
+}
+
+.admin-card-eyebrow {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+}
+
+.admin-soft-badge {
+    background-color: #eef2ff;
+    color: #4338ca;
+    font-weight: 600;
+}

@@ -1,53 +1,66 @@
 ﻿@{
-    ViewData["Title"] = "Admin Home";
+    ViewData["Title"] = "Admin Dashboard";
 }
 
-<div class="py-5 text-center">
-    <div class="mx-auto" style="max-width: 760px;">
-        <h1 class="display-5 fw-semibold mb-3">Welcome</h1>
-        <p class="lead text-muted mb-3">
-            Manage and organize the platform’s archival content in a clear and structured way.
-        </p>
+<div class="admin-page-header mb-4">
+    <div>
+        <h1 class="mb-1">Admin Dashboard</h1>
         <p class="text-muted mb-0">
-            From here, you can maintain funds, review items, and ensure that digital materials are properly organised and accessible.
+            Manage user accounts, role assignments, and system-level access.
         </p>
     </div>
 </div>
 
-<div class="row mt-4 g-4 justify-content-center">
-    <div class="col-md-6 col-lg-5">
-        <div class="card shadow-sm border-0 h-100">
+<div class="row g-4">
+    <div class="col-12 col-lg-8">
+        <div class="card border-0 shadow-sm admin-dashboard-card h-100">
             <div class="card-body p-4">
-                <h2 class="h5 mb-3">Manage Funds</h2>
-                <p class="text-muted mb-4">
-                    Create, edit, and organise archival funds within the system.
-                </p>
-                <a asp-area="Admin"
-                       asp-controller="Funds"
-                       asp-action="Index"
-                       class="btn btn-primary px-4">
-                    Open Funds
-                </a>
+                <div class="d-flex align-items-start justify-content-between flex-wrap gap-3">
+                    <div>
+                        <div class="admin-card-eyebrow">System Administration</div>
+                        <h2 class="h4 mb-2">Users and Roles</h2>
+                        <p class="text-muted mb-4">
+                            View registered users, assign roles, and control who has access to the Manager and Admin areas.
+                        </p>
+                    </div>
+                    <span class="badge rounded-pill admin-soft-badge">Administrator Only</span>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <a asp-area="Admin" asp-controller="Users" asp-action="Index" class="btn btn-primary">
+                        Manage Users
+                    </a>
+                    <a asp-area="Manager" asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">
+                        Open Manager Area
+                    </a>
+                    <a asp-area="User" asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">
+                        Open User Area
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="col-md-6 col-lg-5">
-        <div class="card shadow-sm border-0 h-100">
+    <div class="col-12 col-lg-4">
+        <div class="card border-0 shadow-sm h-100">
             <div class="card-body p-4">
-                <h2 class="h5 mb-3">Manage Items</h2>
-                <p class="text-muted mb-4">
-                    Review and maintain archival items and their associated digital files.
-                </p>
-                <a asp-area="Admin"
-                       asp-controller="Items"
-                       asp-action="Index"
-                       class="btn btn-primary px-4">
-                    Open Items
-                </a>
+                <h2 class="h6 text-uppercase text-muted mb-3">Access Scope</h2>
+
+                <div class="mb-3">
+                    <div class="fw-semibold">Administrator</div>
+                    <div class="text-muted small">Full system control, including user and role management.</div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="fw-semibold">Manager</div>
+                    <div class="text-muted small">Manages funds, items, and digital files in the Manager area.</div>
+                </div>
+
+                <div>
+                    <div class="fw-semibold">User</div>
+                    <div class="text-muted small">Browses archive content and accesses allowed previews/downloads.</div>
+                </div>
             </div>
         </div>
     </div>
 </div>
-
-<div class="py-5"></div>

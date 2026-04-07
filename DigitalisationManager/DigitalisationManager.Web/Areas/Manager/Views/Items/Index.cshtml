@@ -10,12 +10,12 @@
         <div class="text-muted">Browse archival items and filter by fund or keyword</div>
     </div>
 
-    <a class="btn btn-primary" asp-area="Admin" asp-action="Create">Create Item</a>
+    <a class="btn btn-primary" asp-area="Manager" asp-action="Create">Create Item</a>
 </div>
 
 <div class="card shadow-sm mb-3">
     <div class="card-body">
-        <form method="get" asp-area="Admin" asp-action="Index" class="row g-2 align-items-end">
+        <form method="get" asp-area="Manager" asp-action="Index" class="row g-2 align-items-end">
             <div class="col-md-4">
                 <label class="form-label" for="fundId">Fund</label>
                 <select id="fundId" name="fundId" class="form-select">
@@ -49,7 +49,7 @@
             </div>
 
             <div class="col-12">
-                <a class="small text-muted" asp-area="Admin" asp-action="Index">Clear filters</a>
+                <a class="small text-muted" asp-area="Manager" asp-action="Index">Clear filters</a>
             </div>
         </form>
     </div>
@@ -95,21 +95,21 @@ else
                             </td>
                             <td class="text-end">
                                 <a class="btn btn-sm btn-outline-secondary"
-                                   asp-area="Admin"
+                                   asp-area="Manager"
                                    asp-action="Details"
                                    asp-route-id="@item.Id">
                                     Details
                                 </a>
 
                                 <a class="btn btn-sm btn-outline-secondary"
-                                   asp-area="Admin"
+                                   asp-area="Manager"
                                    asp-action="Edit"
                                    asp-route-id="@item.Id">
                                     Edit
                                 </a>
 
                                 <a class="btn btn-sm btn-outline-danger"
-                                   asp-area="Admin"
+                                   asp-area="Manager"
                                    asp-action="Delete"
                                    asp-route-id="@item.Id">
                                     Delete
@@ -137,7 +137,7 @@ else
                     <ul class="pagination mb-0">
                         <li class="page-item @(Model.Results.HasPrevious ? "" : "disabled")">
                             <a class="page-link"
-                               asp-area="Admin"
+                               asp-area="Manager"
                                asp-action="Index"
                                asp-route-fundId="@Model.FundId"
                                asp-route-q="@Model.Q"
@@ -148,7 +148,7 @@ else
 
                         <li class="page-item @(Model.Results.HasNext ? "" : "disabled")">
                             <a class="page-link"
-                               asp-area="Admin"
+                               asp-area="Manager"
                                asp-action="Index"
                                asp-route-fundId="@Model.FundId"
                                asp-route-q="@Model.Q"

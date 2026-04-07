@@ -1,26 +1,32 @@
 ﻿
 namespace DigitalisationManager.Web.Controllers
 {
+    using DigitalisationManager.GCommon;
     using DigitalisationManager.Web.ViewModels;
     using Microsoft.AspNetCore.Mvc;
     using System.Diagnostics;
+
+    using static DigitalisationManager.GCommon.ApplicationConstants;
 
     public class HomeController : Controller
     {
         public IActionResult Index()
         {
-            if (User.Identity != null && User.Identity.IsAuthenticated)
+            if (User.IsInRole(RoleNames.Administrator))
             {
-                if (User.IsInRole("Administrator"))
-                {
-                    return RedirectToAction("Index", "Home", new { area = "Admin" });
-                }
-
-                if (User.IsInRole("User"))
-                {
-                    return RedirectToAction("Index", "Home", new { area = "User" });
-                }
+                return RedirectToAction("Index", "Home", new { area = "Admin" });
             }
+
+            if (User.IsInRole(RoleNames.Manager))
+            {
+                return RedirectToAction("Index", "Home", new { area = "Manager" });
+            }
+
+            if (User.IsInRole(RoleNames.User))
+            {
+                return RedirectToAction("Index", "Home", new { area = "User" });
+            }
+
 
             return View();
         }

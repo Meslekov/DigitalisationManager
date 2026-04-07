@@ -1,10 +1,10 @@
-﻿namespace DigitalisationManager.Web.Areas.Admin.Controllers
+﻿namespace DigitalisationManager.Web.Areas.Manager.Controllers
 {
     using DigitalisationManager.Services.Core.Contracts;
     using DigitalisationManager.Web.ViewModels.DigitalFile;
     using Microsoft.AspNetCore.Mvc;
 
-    public class DigitalFilesController : AdminBaseController
+    public class DigitalFilesController : ManagerBaseController
     {
         private readonly IDigitalFileService digitalFileService;
 
@@ -53,7 +53,7 @@
                 enforceUserAccess: false,
                 canDownloadOriginal: true,
                 canDownloadPreview: true,
-                backToItemDetailsArea: "Admin");
+                backToItemDetailsArea: "Manager");
 
             if (model is null)
             {
@@ -64,7 +64,7 @@
         }
 
         [HttpGet]
-        [Route("/Admin/DigitalFiles/PreviewImage/{id:int}")]
+        [Route("/Manager/DigitalFiles/PreviewImage/{id:int}")]
         public async Task<IActionResult> PreviewImage(int id)
         {
             var result = await digitalFileService.GetPreviewImageAsync(id, enforceUserAccess: false);
@@ -117,7 +117,7 @@
                     : "File access disabled for users.";
             }
 
-            return RedirectToAction("Details", "Items", new { area = "Admin", id = itemId });
+            return RedirectToAction("Details", "Items", new { area = "Manager", id = itemId });
         }
 
         [HttpPost]

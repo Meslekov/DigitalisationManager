@@ -1,11 +1,11 @@
-﻿namespace DigitalisationManager.Web.Areas.Admin.Controllers
+﻿namespace DigitalisationManager.Web.Areas.Manager.Controllers
 {
     using DigitalisationManager.Services.Core.Contracts;
     using DigitalisationManager.Web.ViewModels.Item;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
 
-    public class ItemsController : AdminBaseController
+    public class ItemsController : ManagerBaseController
     {
         private readonly IItemService itemService;
         private readonly IDigitalFileService dgFileService;
