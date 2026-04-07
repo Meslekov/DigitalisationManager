@@ -2,63 +2,72 @@
     ViewData["Title"] = "Privacy Policy";
 }
 
-<div class="container py-4">
+<div class="container py-4" style="max-width: 900px;">
 
     <div class="mb-4">
         <h1 class="h3 mb-1">Privacy Policy</h1>
         <div class="text-muted small">
-            Digitalisation Manager – Archive Management System
+            DigitalisationManager
         </div>
     </div>
 
-    <div class="card shadow-sm">
-        <div class="card-body">
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
 
-            <h2 class="h5">1. Purpose</h2>
-            <p>
-                This system is designed for the management and digitisation of archival materials.
-                It stores metadata for Funds, Items, and associated digital TIFF files.
+            <p class="text-muted mb-4">
+                DigitalisationManager is a platform for accessing and working with digitised archival materials.
+                This Privacy Policy explains what information may be processed when you use the site and how that
+                information is handled within the system.
             </p>
 
-            <h2 class="h5 mt-4">2. Authentication</h2>
+            <h2 class="h5">1. Use of the Platform</h2>
             <p>
-                Access to the application requires authentication.
-                User accounts are managed through ASP.NET Core Identity.
-                Only authorised users can create, edit, upload, or delete archive data.
+                The platform allows authorised users to sign in, browse archival funds, review items, and access
+                available digital files. The information presented through the site is intended to support structured
+                access to archival materials in a clear and secure environment.
             </p>
 
-            <h2 class="h5 mt-4">3. Stored Data</h2>
-            <ul>
-                <li>Fund metadata</li>
-                <li>Item metadata (inventory number, description, document date, status)</li>
-                <li>Digital file metadata (original name, size, checksum, upload date)</li>
-                <li>Uploaded TIFF files stored on disk</li>
-            </ul>
-
-            <h2 class="h5 mt-4">4. File Storage</h2>
+            <h2 class="h5 mt-4">2. Account and Access Information</h2>
             <p>
-                Digital files are stored on the server file system in a structured directory:
+                When you use the platform, your account information may be processed for authentication and access control.
+                This is used only to identify authorised users and to provide access to the appropriate parts of the system.
             </p>
 
-            <div class="bg-light border rounded p-2 small mb-3">
-                Storage/Funds/{FundId}/Items/{ItemId}/Tiffs/{guid}.tif
-            </div>
-
+            <h2 class="h5 mt-4">3. Information Available in the System</h2>
             <p>
-                Files are not stored in the database.
-                Access to files is controlled through authorised controller actions.
+                The platform may display archival information such as funds, items, descriptions, dates, and related
+                digital materials. This information is managed within the system in order to make archival content easier
+                to organise, review, and access.
             </p>
 
-            <h2 class="h5 mt-4">5. Data Protection</h2>
+            <h2 class="h5 mt-4">4. Digital Files</h2>
             <p>
-                Uploaded files are validated for type and size.
-                Each file is stored with a SHA-256 checksum for integrity verification.
+                Some records may include associated digital files. Access to these files is provided through the platform
+                only to users with the appropriate permissions.
             </p>
 
-            <h2 class="h5 mt-4">6. Contact</h2>
+            <h2 class="h5 mt-4">5. Protection of Information</h2>
             <p>
-                For questions regarding data handling or system access,
-                please contact the system administrator.
+                Reasonable technical and organisational measures are used to help protect information processed through the
+                platform and to limit access to authorised users only.
+            </p>
+
+            <h2 class="h5 mt-4">6. Appropriate Use</h2>
+            <p>
+                Users are expected to use the platform responsibly and only for lawful and appropriate purposes. Unauthorised
+                attempts to access, copy, alter, or misuse data or digital materials are not permitted.
+            </p>
+
+            <h2 class="h5 mt-4">7. Changes to This Policy</h2>
+            <p>
+                This Privacy Policy may be updated when needed to reflect changes in the platform or its operation.
+                Continued use of the site after an update means that the revised policy applies.
+            </p>
+
+            <h2 class="h5 mt-4">8. Contact</h2>
+            <p class="mb-0">
+                If you have questions about privacy or the use of this platform, please contact the organisation
+                responsible for the system or the site administrator.
             </p>
 
         </div>

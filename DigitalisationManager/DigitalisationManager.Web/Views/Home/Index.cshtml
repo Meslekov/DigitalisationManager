@@ -2,45 +2,66 @@
     ViewData["Title"] = "Home";
 }
 
-<div class="text-center py-4">
-    <h1 class="display-5">Welcome to DigitalisationManager</h1>
-    <p class="lead text-muted">
-        A digital archive management system for organizing and exploring archival materials.
+<div class="text-center py-5">
+    <h1 class="display-5 fw-semibold">Welcome to DigitalisationManager</h1>
+    <p class="lead text-muted mx-auto" style="max-width: 760px;">
+        DigitalisationManager is a platform for organizing, managing, and exploring digital archival materials in a clear and accessible way.
+    </p>
+    <p class="text-muted mx-auto mb-0" style="max-width: 760px;">
+        Users can browse archival funds, review items, and work with digitized files through an interface designed to make information easy to find and easy to follow.
     </p>
 </div>
 
-<div class="row mt-4 g-3">
-    <div class="col-md-6">
-        <div class="card shadow-sm h-100">
-            <div class="card-body">
-                <h2 class="h5">User Portal</h2>
-                <p class="text-muted">
-                    Browse archival funds, items, and digitalized materials through the user-facing portal.
+<div class="row mt-4 g-4 justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body p-4">
+                <h2 class="h4 mb-3">What you can do here</h2>
+                <p class="text-muted mb-3">
+                    The platform helps present archival content in a structured and user-friendly way, making it easier to navigate collections and access digitized materials.
                 </p>
-                <p class="mb-0">
-                    This area will provide a simplified browsing experience separate from the administration panel.
-                </p>
+
+                <div class="row g-3 text-start">
+                    <div class="col-md-4">
+                        <div class="bg-light rounded-3 p-3 h-100">
+                            <h3 class="h6 mb-2">Browse collections</h3>
+                            <p class="text-muted mb-0">
+                                Explore archival funds and discover the materials available in the system.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="bg-light rounded-3 p-3 h-100">
+                            <h3 class="h6 mb-2">Review items</h3>
+                            <p class="text-muted mb-0">
+                                View organized records and follow information in a clear and structured format.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="bg-light rounded-3 p-3 h-100">
+                            <h3 class="h6 mb-2">Access digital files</h3>
+                            <p class="text-muted mb-0">
+                                Work with digitized materials and preview content made available through the platform.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                @if (User.IsInRole("Administrator"))
+                {
+                    <div class="mt-4 text-center">
+                        <a asp-area="Admin"
+                               asp-controller="Home"
+                               asp-action="Index"
+                               class="btn btn-primary px-4">
+                            Continue
+                        </a>
+                    </div>
+                }
             </div>
         </div>
     </div>
-
-    @if (User.IsInRole("Administrator"))
-    {
-        <div class="col-md-6">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h2 class="h5">Administration</h2>
-                    <p class="text-muted">
-                        Access the administration panel to manage funds, items, digital files, and system data.
-                    </p>
-                    <a asp-area="Admin"
-                           asp-controller="Home"
-                           asp-action="Index"
-                           class="btn btn-primary">
-                        Open Admin Panel
-                    </a>
-                </div>
-            </div>
-        </div>
-    }
 </div>
