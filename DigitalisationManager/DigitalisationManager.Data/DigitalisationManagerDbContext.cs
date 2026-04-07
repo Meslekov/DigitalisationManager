@@ -2,6 +2,7 @@
 {
     using DigitalisationManager.Data.Models.Entities;
     using DigitalisationManager.Data.Models.Identity;
+    using DigitalisationManager.GCommon;
     using DigitalisationManager.GCommon.Enums;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -66,8 +67,9 @@
                 builder.Entity<ItemHistory>()
                        .HasIndex(ih => new { ih.ItemId, ih.CreatedAt });
 
-            Guid administratorRoleId = Guid.Parse("11111111-1111-1111-1111-111111111111");
+                Guid administratorRoleId = Guid.Parse("11111111-1111-1111-1111-111111111111");
                 Guid userRoleId = Guid.Parse("22222222-2222-2222-2222-222222222222");
+                Guid managerRoleId = Guid.Parse("99999999-9999-9999-9999-999999999999");
                 Guid adminUserId = Guid.Parse("33333333-3333-3333-3333-333333333333");
                 
                 ApplicationRole administratorRole = new ApplicationRole
@@ -87,8 +89,17 @@
                     Label = "User",
                     ConcurrencyStamp = "55555555-5555-5555-5555-555555555555"
                 };
-                
-                builder.Entity<ApplicationRole>().HasData(administratorRole, userRole);
+
+                ApplicationRole managerRole = new ApplicationRole
+                {
+                    Id = managerRoleId,
+                    Name = ApplicationConstants.RoleNames.Manager,
+                    NormalizedName = ApplicationConstants.RoleNames.Manager.ToUpperInvariant(),
+                    Label = "Manager",
+                    ConcurrencyStamp = "88888888-8888-8888-8888-888888888888"
+                };
+
+            builder.Entity<ApplicationRole>().HasData(administratorRole, userRole, managerRole);
 
             ApplicationUser adminUser = new ApplicationUser
             {
