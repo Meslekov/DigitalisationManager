@@ -407,17 +407,17 @@ The tests were designed to cover meaningful business logic rather than superfici
 
 ### Administrator
 
-- Email: `admin@digitalisationmanager.local`  
+- Email: `admin@admin.local`  
 - Password: `Admin123!`  
 
 ### Manager
 
-- Email: `manager@digitalisationmanager.local`  
+- Email: `manager@manager.com`  
 - Password: `Manager123!`  
 
 ### User
 
-- Email: `user@digitalisationmanager.local`  
+- Email: `user@user.com`  
 - Password: `User123!`  
 
 ---
