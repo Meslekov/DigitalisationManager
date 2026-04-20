@@ -20,6 +20,7 @@
             public DbSet<DigitalFile> DigitalFiles { get; set; } = null!;
             public DbSet<Category> Categories { get; set; } = null!;
             public DbSet<ItemHistory> ItemHistories { get; set; } = null!;
+            public DbSet<ArchiveLocation> ArchiveLocations { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -66,6 +67,16 @@
                
                 builder.Entity<ItemHistory>()
                        .HasIndex(ih => new { ih.ItemId, ih.CreatedAt });
+
+                builder.Entity<Item>()
+                       .HasOne(i => i.ArchiveLocation)
+                       .WithMany(al => al.Items)
+                       .HasForeignKey(i => i.ArchiveLocationId)
+                       .OnDelete(DeleteBehavior.SetNull);
+
+                builder.Entity<ArchiveLocation>()
+                       .HasIndex(al => al.Name)
+                       .IsUnique();
 
             Guid administratorRoleId = Guid.Parse("11111111-1111-1111-1111-111111111111");
             Guid userRoleId = Guid.Parse("22222222-2222-2222-2222-222222222222");
@@ -311,6 +322,34 @@
                     new Item { Id = 24, FundId = 6, CategoryId = 3, InventoryNumber = "INV-024", Description = "Temporary exhibition visuals", DocumentDateText = "2012", Status = ItemStatus.New, CreatedAt = new DateTime(2026, 2, 14, 9, 55, 0, DateTimeKind.Utc) }
                   );
 
+            builder.Entity<ArchiveLocation>().HasData(
+                    new ArchiveLocation
+                    {
+                        Id = 1,
+                        Name = "Central Archive",
+                        Room = "Room A",
+                        Shelf = "Shelf 1",
+                        Description = "Primary storage for municipal archive materials.",
+                        CreatedAt = new DateTime(2026, 2, 13, 10, 0, 0, DateTimeKind.Utc)
+                    },
+                    new ArchiveLocation
+                    {
+                        Id = 2,
+                        Name = "Photo Storage",
+                        Room = "Room B",
+                        Shelf = "Shelf 3",
+                        Description = "Storage area for photo and image materials.",
+                        CreatedAt = new DateTime(2026, 2, 13, 10, 5, 0, DateTimeKind.Utc)
+                    },
+                    new ArchiveLocation
+                    {
+                        Id = 3,
+                        Name = "Restricted Archive",
+                        Room = "Room C",
+                        Shelf = "Shelf 2",
+                        Description = "Restricted-access archival storage.",
+                        CreatedAt = new DateTime(2026, 2, 13, 10, 10, 0, DateTimeKind.Utc)
+                    });
         }
         }
     }
