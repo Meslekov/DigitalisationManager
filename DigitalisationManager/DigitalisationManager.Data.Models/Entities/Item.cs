@@ -41,6 +41,11 @@
 
         public virtual Category Category { get; set; } = null!;
 
+        public int? ArchiveLocationId { get; set; }
+
+        [ForeignKey(nameof(ArchiveLocationId))]
+        public virtual ArchiveLocation? ArchiveLocation { get; set; }
+
         public virtual ICollection<DigitalFile> DigitalFiles { get; set; } = new List<DigitalFile>();
         
         public virtual ICollection<ItemHistory> ItemHistories { get; set; } = new List<ItemHistory>();
