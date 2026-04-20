@@ -20,5 +20,8 @@
 
         public int FilesCount { get; set; }
         public DateTime CreatedAt { get; set; }
+
+        public int? ArchiveLocationId { get; set; }
+        public string? ArchiveLocationName { get; set; }
     }
 }

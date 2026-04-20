@@ -23,6 +23,10 @@
 
         public int FilesCount { get; set; }
 
+        public int? ArchiveLocationId { get; set; }
+        public string? ArchiveLocationName { get; set; }
+
+
         public IReadOnlyList<DigitalFileListViewModel> Files { get; set; } = Array.Empty<DigitalFileListViewModel>();
 
         public IReadOnlyList<ItemHistoryListViewModel> HistoryEntries { get; set; } = Array.Empty<ItemHistoryListViewModel>();

@@ -37,5 +37,10 @@
 
         [Required]
         public ItemStatus Status { get; set; } = ItemStatus.New;
+
+        [Display(Name = "Archive location")]
+        public int? ArchiveLocationId { get; set; }
+
+        public List<DropdownOptionViewModel> ArchiveLocations { get; set; } = new();
     }
 }
