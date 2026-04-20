@@ -34,6 +34,7 @@
         {
             model.Funds = await GetFundsSelectListAsync();
             model.Categories = await GetCategoriesSelectListAsync();
+            model.ArchiveLocations = await GetArchiveLocationsSelectListAsync(); ;
         }
 
         public async Task<int> CreateAsync(ItemFormViewModel model)
@@ -52,7 +53,8 @@
                 Description = NormalizeOptionalText(model.Description),
                 DocumentDateText = NormalizeOptionalText(model.DocumentDateText),
                 Status = model.Status,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                ArchiveLocationId = model.ArchiveLocationId
             };
 
             context.Items.Add(entity);
@@ -70,6 +72,7 @@
                 .Include(i => i.Fund)
                 .Include(i => i.Category)
                 .Include(i => i.ItemHistories)
+                .Include(i => i.ArchiveLocation)
                 .Where(i => i.Id == id)
                 .Select(i => new ItemDetailsViewModel
                 {
@@ -84,6 +87,8 @@
                     Status = i.Status,
                     CreatedAt = i.CreatedAt,
                     FilesCount = i.DigitalFiles.Count,
+                    ArchiveLocationId = i.ArchiveLocationId,
+                    ArchiveLocationName = i.ArchiveLocation != null ? i.ArchiveLocation.Name : null,
                     HistoryEntries = i.ItemHistories
                         .OrderByDescending(h => h.CreatedAt)
                         .Select(h => new ItemHistoryListViewModel
@@ -120,6 +125,7 @@
                 .Include(i => i.Fund)
                 .Include(i => i.Category)
                 .Include(i => i.DigitalFiles)
+                .Include(i => i.ArchiveLocation)
                 .AsQueryable();
 
             if (fundId.HasValue)
@@ -164,7 +170,9 @@
                     DocumentDateText = i.DocumentDateText,
                     Status = i.Status,
                     FilesCount = i.DigitalFiles.Count,
-                    CreatedAt = i.CreatedAt
+                    CreatedAt = i.CreatedAt,
+                    ArchiveLocationId = i.ArchiveLocationId,
+                    ArchiveLocationName = i.ArchiveLocation != null ? i.ArchiveLocation.Name : null
                 })
                 .ToListAsync();
 
@@ -188,6 +196,7 @@
         {
             ItemFormViewModel? vm = await context.Items
                 .AsNoTracking()
+                .Include(i => i.ArchiveLocation)
                 .Where(i => i.Id == id)
                 .Select(i => new ItemFormViewModel
                 {
@@ -197,7 +206,8 @@
                     InventoryNumber = i.InventoryNumber,
                     Description = i.Description,
                     DocumentDateText = i.DocumentDateText,
-                    Status = i.Status
+                    Status = i.Status,
+                    ArchiveLocationId = i.ArchiveLocationId
                 })
                 .FirstOrDefaultAsync();
 
@@ -241,7 +251,8 @@
                 normalizedInventoryNumber,
                 normalizedDescription,
                 normalizedDocumentDateText,
-                model.Status);
+                model.Status,
+                model.ArchiveLocationId);
 
             entity.FundId = model.FundId;
             entity.CategoryId = model.CategoryId;
@@ -249,6 +260,7 @@
             entity.Description = normalizedDescription;
             entity.DocumentDateText = normalizedDocumentDateText;
             entity.Status = model.Status;
+            entity.ArchiveLocationId = model.ArchiveLocationId;
 
             try
             {
@@ -312,6 +324,18 @@
                 return "Selected category does not exist or is inactive.";
             }
 
+            if (model.ArchiveLocationId.HasValue)
+            {
+                bool archiveLocationExists = await context.ArchiveLocations
+                    .AsNoTracking()
+                    .AnyAsync(al => al.Id == model.ArchiveLocationId.Value);
+
+                if (!archiveLocationExists)
+                {
+                    return "Selected archive location does not exist.";
+                }
+            }
+
             string inventoryNumber = model.InventoryNumber.Trim();
 
             bool duplicateExists = await context.Items
@@ -327,6 +351,19 @@
             }
 
             return null;
+        }
+
+        private async Task<List<DropdownOptionViewModel>> GetArchiveLocationsSelectListAsync()
+        {
+            return await context.ArchiveLocations
+                .AsNoTracking()
+                .OrderBy(al => al.Name)
+                .Select(al => new DropdownOptionViewModel
+                {
+                    Value = al.Id.ToString(),
+                    Text = $"{al.Name} ({al.Room ?? "No room"}, {al.Shelf ?? "No shelf"})"
+                })
+                .ToListAsync();
         }
 
         private async Task AppendHistoryAsync(int itemId, string action, string? description)
@@ -350,7 +387,8 @@
             string inventoryNumber,
             string? description,
             string? documentDateText,
-            GCommon.Enums.ItemStatus status)
+            GCommon.Enums.ItemStatus status,
+            int? archiveLocationId)
         {
             List<string> changes = new List<string>();
 
@@ -382,6 +420,11 @@
             if (entity.Status != status)
             {
                 changes.Add("Status updated.");
+            }
+
+            if(entity.ArchiveLocationId != archiveLocationId)
+            {
+                changes.Add("Archive location changed.");
             }
 
             return changes.Count == 0
