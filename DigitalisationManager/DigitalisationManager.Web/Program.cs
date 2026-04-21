@@ -17,8 +17,22 @@ namespace DigitalisationManager.Web
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            string connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
-                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            var connectionString =
+    builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? builder.Configuration["ConnectionStrings:DefaultConnection"]
+    ?? Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
+    ?? Environment.GetEnvironmentVariable("SQLAZURECONNSTR_DefaultConnection");
+
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new InvalidOperationException(
+                    $"Connection string 'DefaultConnection' not found. " +
+                    $"ConnStrings config exists: {!string.IsNullOrWhiteSpace(builder.Configuration["ConnectionStrings:DefaultConnection"])}; " +
+                    $"Env ConnectionStrings__DefaultConnection exists: {!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection"))}; " +
+                    $"Env SQLAZURECONNSTR_DefaultConnection exists: {!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("SQLAZURECONNSTR_DefaultConnection"))}"
+                );
+            }
+
             builder.Services.AddDbContext<DigitalisationManagerDbContext>(options =>
                 options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
