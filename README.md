@@ -402,7 +402,7 @@ The application is publicly available and deployed on Azure App Service.
 
 1. Open the following URL in your browser:
 
-👉   https://digitalisationmanager2-g2bwgxc5drgph4e9.westeurope-01.azurewebsites.net/Manager
+👉   https://digitalisationmanager2-g2bwgxc5drgph4e9.westeurope-01.azurewebsites.net
 
 ---
 
