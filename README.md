@@ -288,12 +288,8 @@ This allows lecturers and testers to log in immediately and explore the applicat
 1. Clone the repository  
 2. Open the solution in Visual Studio  
 3. Configure the connection string in `appsettings.json`  
-4. Apply migrations  
+4. Apply migrations -> Update-Database
 5. Run the application  
-
-### Package Manager Console
-
-Update-Database
 
 
 ## How to Run
