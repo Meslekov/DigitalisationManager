@@ -176,6 +176,9 @@ Stores information about:
 ### ItemHistory
 Stores history entries related to item changes and actions.
 
+### ArchiveLocation
+Stores item archive location.
+
 ### ApplicationUser
 Custom ASP.NET Identity user.
 
@@ -388,6 +391,18 @@ Covered scenarios include:
 - service-focused business logic tests  
 
 The tests were designed to cover meaningful business logic rather than superficial checks.
+
+---
+
+## 🌐 How to Access the Deployed Application
+
+The application is publicly available and deployed on Azure App Service.
+
+### Open the Application
+
+1. Open the following URL in your browser:
+
+👉   https://digitalisationmanager2-g2bwgxc5drgph4e9.westeurope-01.azurewebsites.net/Manager
 
 ---
 
