@@ -398,7 +398,7 @@ The application is publicly available and deployed on Azure App Service.
 
 1. Open the following URL in your browser:
 
-👉   digitalisation-manager-web-amfmaxbgaka7ehhg.austriaeast-01.azurewebsites.net
+👉  https://digitalisation-manager-web-amfmaxbgaka7ehhg.austriaeast-01.azurewebsites.net
 
 ---
 
