@@ -793,7 +793,7 @@ public class DigitalFileServiceTests
     }
 
     [Test]
-    public async Task GetPreviewPageAsync_ShouldReturnNavigationData_ForAdminArea()
+    public async Task GetPreviewPageAsync_ShouldReturnNavigationData_ForManagerArea()
     {
         var item = await TestDataSeeder.AddItemAsync(_context, id: 88);
 
@@ -859,7 +859,7 @@ public class DigitalFileServiceTests
             enforceUserAccess: false,
             canDownloadOriginal: true,
             canDownloadPreview: true,
-            backToItemDetailsArea: "Admin");
+            backToItemDetailsArea: "Manager");
 
         Assert.That(result, Is.Not.Null);
         Assert.That(result!.Id, Is.EqualTo(second.Id));
@@ -870,8 +870,8 @@ public class DigitalFileServiceTests
         Assert.That(result.NextFileId, Is.EqualTo(third.Id));
         Assert.That(result.CanDownloadOriginal, Is.True);
         Assert.That(result.CanDownloadPreview, Is.True);
-        Assert.That(result.BackToItemDetailsArea, Is.EqualTo("Admin"));
-        Assert.That(result.PreviewImageUrl, Is.EqualTo($"/Admin/DigitalFiles/PreviewImage/{second.Id}"));
+        Assert.That(result.BackToItemDetailsArea, Is.EqualTo("Manager"));
+        Assert.That(result.PreviewImageUrl, Is.EqualTo($"/Manager/DigitalFiles/PreviewImage/{second.Id}"));
     }
 
     [Test]

@@ -1,6 +1,6 @@
 ﻿namespace DigitalisationManager.Tests.Helpers;
 
-using Microsoft.AspNetCore.Http.Internal;
+using Microsoft.AspNetCore.Http;
 
 public static class FormFileFactory
 {
