@@ -1,4 +1,8 @@
-﻿@using static DigitalisationManager.GCommon.ApplicationConstants
+﻿@using DigitalisationManager.Web.PublicDemo
+@using Microsoft.Extensions.Options
+@inject IOptionsMonitor<PublicDemoOptions> PublicDemoOptions
+
+@using static DigitalisationManager.GCommon.ApplicationConstants
 @{
     ViewData["Title"] = "Home";
 }
@@ -12,6 +16,12 @@
         Users can browse archival funds, review items, and work with digitized files through an interface designed to make information easy to find and easy to follow.
     </p>
 </div>
+
+@if (PublicDemoOptions.CurrentValue.Enabled &&
+   User.Identity?.IsAuthenticated != true)
+{
+    <partial name="_PublicDemoAccounts" />
+}
 
 <div class="row mt-4 g-4 justify-content-center">
     <div class="col-lg-8">
