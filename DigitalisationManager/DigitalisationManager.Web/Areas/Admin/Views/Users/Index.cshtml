@@ -4,6 +4,8 @@
     ViewData["Title"] = "Users";
 }
 
+
+
 <div class="container mt-4">
     <h1 class="mb-3">Users</h1>
 
@@ -24,16 +26,17 @@
                     <td>@($"{user.FirstName} {user.LastName}")</td>
                     <td>@user.SelectedRole</td>
                     <td>
-                        <a asp-area="Admin"
-                               asp-controller="Users"
-                               asp-action="EditRole"
-                               asp-route-id="@user.UserId"
-                               class="btn btn-sm btn-outline-primary">
-                            Edit Role
-                        </a>
-                    </td>
+                           <a asp-area="Admin"
+                                  asp-controller="Users"
+                                  asp-action="EditRole"
+                                  asp-route-id="@user.UserId"
+                                  class="btn btn-sm btn-outline-primary">
+                               Edit Role
+                           </a>   
+                     </td>
                 </tr>
             }
         </tbody>
     </table>
-</div>
+
+    </div>

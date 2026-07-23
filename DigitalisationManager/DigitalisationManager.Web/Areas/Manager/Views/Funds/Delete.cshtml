@@ -28,7 +28,11 @@
         <form class="mt-4" asp-action="DeleteConfirmed" asp-route-id="@Model.Id" method="post">
             @Html.AntiForgeryToken()
 
-            <button type="submit" class="btn btn-danger">Yes, delete</button>
+            <button type="submit" 
+                    class="btn btn-danger"
+                    demo-blocked>
+                    Yes, delete
+            </button>
             <a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@Model.Id">Cancel</a>
         </form>
     </div>

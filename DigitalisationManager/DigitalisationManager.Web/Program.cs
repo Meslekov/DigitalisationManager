@@ -9,6 +9,9 @@ namespace DigitalisationManager.Web
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
+    using DigitalisationManager.Web.PublicDemo;
+
+    using static DigitalisationManager.GCommon.ApplicationConstants;
 
     public class Program
     {
@@ -55,15 +58,24 @@ namespace DigitalisationManager.Web
                 options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
             });
 
-            //My services
+            //Services
             builder.Services.AddScoped<IFundService, FundService>();
             builder.Services.AddScoped<IItemService, ItemService>();
             builder.Services.AddScoped<IFileStorageService, FileStorageService>();
-            builder.Services.AddScoped<FileStorageOptions>();
             builder.Services.AddScoped<IDigitalFileService, DigitalFileService>();
             builder.Services.AddScoped<IOriginalFileStorageService, OriginalFileStorageService>();
             builder.Services.AddScoped<IPreviewImageStorageService, PreviewImageStorageService>();
             builder.Services.AddScoped<ITiffConversionService, TiffConversionService>();
+
+            //Options
+            builder.Services.AddOptions<FileStorageOptions>()
+                .Bind(builder.Configuration.GetSection("FileStorage"))
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
+
+            //Authorization policies 
+            builder.Services.AddPublicDemo(builder.Configuration);
+
 
             WebApplication app = builder.Build();
 
@@ -85,6 +97,8 @@ namespace DigitalisationManager.Web
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UsePublicDemoGuard();
 
             app.MapStaticAssets();
 

@@ -50,6 +50,5 @@
             public const int DescriptionMax = 1000;
         }
 
-
     }
 }

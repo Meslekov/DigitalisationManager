@@ -156,7 +156,9 @@
                    accept=".tif,.tiff,image/tiff" />
         </div>
 
-        <button class="btn btn-primary" type="submit">
+        <button class="btn btn-primary" 
+                type="submit"
+                demo-blocked>
             Upload
         </button>
     </form>
@@ -230,7 +232,9 @@
                                         <input type="hidden" name="itemId" value="@Model.Id" />
                                         <input type="hidden" name="isAllowed" value="@(file.IsDownloadAllowed ? "false" : "true")" />
 
-                                        <button type="submit" class="btn btn-sm btn-outline-primary">
+                                        <button type="submit" 
+                                                class="btn btn-sm btn-outline-primary"
+                                                demo-blocked>
                                             @(file.IsDownloadAllowed ? "Block for Users" : "Allow for Users")
                                         </button>
                                     </form>
@@ -297,7 +301,8 @@
                     <input type="hidden" name="itemId" id="deleteItemId" />
 
                     <button type="submit"
-                            class="btn btn-danger">
+                            class="btn btn-danger"
+                            demo-blocked>
                         Delete
                     </button>
                 </form>

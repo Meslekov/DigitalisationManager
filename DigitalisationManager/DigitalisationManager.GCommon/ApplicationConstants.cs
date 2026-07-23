@@ -17,5 +17,7 @@
             public const string Manager = "Manager";
             public const string Administrator = "Administrator";
         }
+
+       
     }
 }

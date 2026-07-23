@@ -6,6 +6,8 @@
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
 
+    using static DigitalisationManager.GCommon.ApplicationConstants;
+
     public class UsersController : AdminBaseController
     {
         private readonly UserManager<ApplicationUser> userManager;
@@ -34,9 +36,9 @@
                     SelectedRole = roles.FirstOrDefault() ?? ApplicationConstants.RoleNames.User,
                     AvailableRoles = new[]
                     {
-                        ApplicationConstants.RoleNames.User,
-                        ApplicationConstants.RoleNames.Manager,
-                        ApplicationConstants.RoleNames.Administrator
+                        RoleNames.User,
+                        RoleNames.Manager,
+                        RoleNames.Administrator
                     }
                 });
             }
@@ -64,9 +66,9 @@
                 SelectedRole = roles.FirstOrDefault() ?? ApplicationConstants.RoleNames.User,
                 AvailableRoles = new[]
                 {
-                    ApplicationConstants.RoleNames.User,
-                    ApplicationConstants.RoleNames.Manager,
-                    ApplicationConstants.RoleNames.Administrator
+                    RoleNames.User,
+                    RoleNames.Manager,
+                    RoleNames.Administrator
                 }
             };
 
@@ -83,7 +85,7 @@
             }
 
             if (user.Email == "admin@digitalisationmanager.local" &&
-                model.SelectedRole != ApplicationConstants.RoleNames.Administrator)
+                model.SelectedRole != RoleNames.Administrator)
             {
                 ModelState.AddModelError(string.Empty, "The seeded main administrator cannot be demoted.");
             }
@@ -92,9 +94,9 @@
             {
                 model.AvailableRoles = new[]
                 {
-                    ApplicationConstants.RoleNames.User,
-                    ApplicationConstants.RoleNames.Manager,
-                    ApplicationConstants.RoleNames.Administrator
+                   RoleNames.User,
+                   RoleNames.Manager,
+                   RoleNames.Administrator
                 };
 
                 return View(model);

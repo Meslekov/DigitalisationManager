@@ -20,3 +20,8 @@ src/**/Storage/
 
 # Digital file storage (TIFF uploads)
 DigitalisationManager.Web/Storage/
+
+# Local Azure publish profiles
+**/Properties/PublishProfiles/*.pubxml
+**/Properties/PublishProfiles/*.pubxml.user
+*.PublishSettings
